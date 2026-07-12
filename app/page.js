@@ -91,18 +91,132 @@ export default function Home() {
         </div>
       </section>
 
-      <section style={{ padding: '2.5rem 0', borderTop: '1px solid var(--border)', borderBottom: '1px solid var(--border)', overflow: 'hidden' }}>
-        <ScrollReveal direction="up">
-          <p style={{ textAlign: 'center', fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.15em', color: 'var(--text-muted)', marginBottom: '1.5rem' }}>Trusted by brands across Bangladesh</p>
-        </ScrollReveal>
-        <div style={{ display: 'flex', gap: '3rem', animation: 'marquee 25s linear infinite', width: 'max-content' }}>
-          {[...Array(2)].map((_, setIndex) => (
-            ['Banglalink', 'Robi', 'Airtel', 'Huawei', 'bKash', 'Marico', 'DANO', 'Syngenta', 'Asian Paints', 'BSRM', 'Godrej', 'Nestle'].map((brand, i) => (
-              <div key={`${setIndex}-${i}`} style={{ padding: '0.6rem 2rem', borderRadius: '8px', border: '1px solid var(--border)', background: 'rgba(22,22,42,0.6)', fontFamily: 'var(--font-display)', fontSize: '0.8rem', fontWeight: 600, color: 'var(--text-muted)', whiteSpace: 'nowrap', letterSpacing: '0.05em', transition: 'all 0.3s', cursor: 'default' }}>
-                {brand}
-              </div>
+      {/* ===== CLIENT LOGOS ===== */}
+      <section style={{
+        padding: '3.5rem 0',
+        borderTop: '1px solid var(--border)',
+        borderBottom: '1px solid var(--border)',
+        overflow: 'hidden',
+      }}>
+        <p style={{
+          textAlign: 'center',
+          fontSize: '0.9rem',
+          textTransform: 'uppercase',
+          letterSpacing: '0.2em',
+          color: 'var(--text-secondary)',
+          marginBottom: '2rem',
+        }}>
+          Trusted by leading brands
+        </p>
+
+        <div style={{
+          display: 'flex',
+          gap: '3.5rem',
+          alignItems: 'center',
+          animation: 'marquee 30s linear infinite',
+          width: 'max-content',
+          marginBottom: '2rem',
+        }}>
+          {[...Array(2)].flatMap((_, s) =>
+            [
+              { src: '/clients/airtel.png', name: 'Airtel' },
+              { src: '/clients/asianpaints.png', name: 'Asian Paints' },
+              { src: '/clients/banglalink.png', name: 'Banglalink' },
+              { src: '/clients/bkash.png', name: 'bKash' },
+              { src: '/clients/bsrm.png', name: 'BSRM' },
+              { src: '/clients/dano.png', name: 'DANO' },
+              { src: '/clients/godrej.png', name: 'Godrej' },
+              { src: '/clients/grey.png', name: 'Grey' },
+              { src: '/clients/huawei.png', name: 'Huawei' },
+              { src: '/clients/kfc.png', name: 'KFC' },
+              { src: '/clients/marico.png', name: 'Marico' },
+              { src: '/clients/nestle.png', name: 'Nestle' },
+              { src: '/clients/robi.png', name: 'Robi' },
+              { src: '/clients/reneta.png', name: 'Renata' },
+              { src: '/clients/square.png', name: 'Square' },
+            ].map((brand, i) => (
+              <img
+                key={`r1-${s}-${i}`}
+                src={brand.src}
+                alt={brand.name}
+                title={brand.name}
+                style={{
+            
+                  height: '55',
+                  maxHeight: '70px',
+                  maxWidth: '160px',
+                  objectFit: 'contain',
+                  filter: 'none',opacity: 0.7,
+                  opacity: 0.5,
+                  transition: 'all 0.3s ease',
+                  cursor: 'default',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={e => {
+  e.target.style.opacity = '1'
+  e.target.style.transform = 'scale(1.1)'
+}}
+onMouseLeave={e => {
+  e.target.style.opacity = '0.7'
+  e.target.style.transform = 'scale(1)'
+}}
+              />
             ))
-          ))}
+          )}
+        </div>
+
+        <div style={{
+          display: 'flex',
+          gap: '3.5rem',
+          alignItems: 'center',
+          animation: 'marqueeReverse 35s linear infinite',
+          width: 'max-content',
+        }}>
+          {[...Array(2)].flatMap((_, s) =>
+            [
+              { src: '/clients/analyzen.png', name: 'Analyzen' },
+              { src: '/clients/bsm.png', name: 'BSM' },
+              { src: '/clients/exp.png', name: 'EXP' },
+              { src: '/clients/jhonhopkins.png', name: 'Johns Hopkins' },
+              { src: '/clients/mlc.png', name: 'MLC' },
+              { src: '/clients/monico.png', name: 'Monico' },
+              { src: '/clients/pushti.png', name: 'Pushti' },
+              { src: '/clients/searchlite.png', name: 'Searchlite' },
+              { src: '/clients/sunpharma.png', name: 'Sun Pharma' },
+              { src: '/clients/syngenta.png', name: 'Syngenta' },
+              { src: '/clients/unfpa.png', name: 'UNFPA' },
+              { src: '/clients/windmill.png', name: 'Windmill' },
+              { src: '/clients/zanzee.png', name: 'Za N Zee' },
+              { src: '/clients/proffessorfedel.png', name: 'Professor Fedel' },
+              { src: '/clients/poribar.png', name: 'Poribar Pori Kolpona' },
+            ].map((brand, i) => (
+              <img
+                key={`r2-${s}-${i}`}
+                src={brand.src}
+                alt={brand.name}
+                title={brand.name}
+                style={{
+                  height: '55',
+                  maxHeight: '70px',
+                  maxWidth: '160px',
+                  objectFit: 'contain',
+                  filter: 'none',opacity: 0.7,
+                  opacity: 0.5,
+                  transition: 'all 0.3s ease',
+                  cursor: 'default',
+                  userSelect: 'none',
+                }}
+                onMouseEnter={e => {
+  e.target.style.opacity = '1'
+  e.target.style.transform = 'scale(1.1)'
+}}
+onMouseLeave={e => {
+  e.target.style.opacity = '0.7'
+  e.target.style.transform = 'scale(1)'
+}}
+              />
+            ))
+          )}
         </div>
       </section>
 

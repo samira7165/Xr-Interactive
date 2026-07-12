@@ -1,7 +1,7 @@
 export const services = [
   {
     id: 'arvr',
-    icon: '🥽',
+    icon: 'Glasses',
     title: 'AR/VR & Mixed Reality',
     short: 'Immersive experiences that blur the line between digital and physical worlds.',
     description: 'From virtual reality gaming to augmented reality filters and mixed reality installations, we build experiences that transport your audience into new dimensions. Our solutions span VR headset experiences, mobile AR, WebAR, and spatial computing.',
@@ -9,7 +9,7 @@ export const services = [
   },
   {
     id: 'games',
-    icon: '🎮',
+    icon: 'Joystick',
     title: 'Game Design & Development',
     short: 'Engaging games that captivate players and elevate brand experiences.',
     description: 'We create branded games, hyper-casual mobile games, and interactive experiences that drive engagement. From concept art to deployment, our team handles the full game development pipeline.',
@@ -17,7 +17,7 @@ export const services = [
   },
   {
     id: 'events',
-    icon: '🎪',
+    icon: 'Events',
     title: 'Event Activation',
     short: 'Turn events into unforgettable interactive experiences.',
     description: 'We bring technology to physical spaces with VR gaming zones, AR photo booths, interactive installations, and digital activations that make your events impossible to forget.',
@@ -25,7 +25,7 @@ export const services = [
   },
   {
     id: 'web',
-    icon: '🌐',
+    icon: 'Web',
     title: 'Web & App Solutions',
     short: 'Full-stack development for modern, performant digital products.',
     description: 'From responsive websites to progressive web apps and mobile applications, we build digital products that are fast, accessible, and built to scale.',
@@ -33,7 +33,7 @@ export const services = [
   },
   {
     id: 'ai',
-    icon: '🤖',
+    icon: 'Iot',
     title: 'AI & Generative Solutions',
     short: 'AI-powered tools and generative experiences for next-gen campaigns.',
     description: 'Leverage artificial intelligence for chatbots, generative content, AI-powered filters, and intelligent automation that transform how your brand engages with audiences.',
