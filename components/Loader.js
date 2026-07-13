@@ -62,17 +62,11 @@ export default function Loader({ onComplete }) {
       transition: 'opacity 0.5s ease',
     }}>
       {/* Logo */}
-      <div style={{
-        width: '80px', height: '80px', borderRadius: '16px',
-        background: 'linear-gradient(135deg, #71529C 0%, #AC86B8 50%, #C084FC 100%)',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        fontFamily: "'Orbitron', sans-serif",
-        fontSize: '1.5rem', fontWeight: 700, color: 'white',
+      <img src="/logo.png" alt="XR Interactive" style={{
+        height: '150px',
         marginBottom: '1rem',
         animation: 'logoPulse 2s ease-in-out infinite',
-      }}>
-        XRI
-      </div>
+      }} />
 
       {/* Status text */}
       <div style={{

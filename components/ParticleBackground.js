@@ -1,7 +1,7 @@
 'use client'
+
 import { useRef, useMemo, useEffect, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Float } from '@react-three/drei'
 import * as THREE from 'three'
 
 function useScrollProgress() {
@@ -32,81 +32,114 @@ function useMouse() {
   return mouse
 }
 
-function lerpColor(c1, c2, t) {
-  return new THREE.Color(c1.r + (c2.r - c1.r) * t, c1.g + (c2.g - c1.g) * t, c1.b + (c2.b - c1.b) * t)
-}
-
-function GalaxyParticles({ count = 3000, mouse, scrollProgress }) {
+function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
   const mesh = useRef()
-  const basePositions = useMemo(() => {
+
+  const { basePositions, speeds } = useMemo(() => {
     const pos = new Float32Array(count * 3)
+    const spd = new Float32Array(count)
     for (let i = 0; i < count; i++) {
       const angle = Math.random() * Math.PI * 2
-      const radius = Math.random() * 12 + 1
-      const spiral = angle + radius * 0.3
-      const armOffset = (Math.random() - 0.5) * 2
-      pos[i * 3] = Math.cos(spiral) * radius + armOffset
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 1.5
-      pos[i * 3 + 2] = Math.sin(spiral) * radius + armOffset
+      const radius = Math.random() * 8 + 1
+      pos[i * 3] = Math.cos(angle) * radius
+      pos[i * 3 + 1] = Math.sin(angle) * radius
+      pos[i * 3 + 2] = Math.random() * 40 - 20
+      spd[i] = Math.random() * 0.5 + 0.3
     }
-    return pos
+    return { basePositions: pos, speeds: spd }
   }, [count])
 
-  const colorStops = useMemo(() => [
-    new THREE.Color('#C084FC'),
-    new THREE.Color('#60A5FA'),
-    new THREE.Color('#F472B6'),
-    new THREE.Color('#C084FC'),
-  ], [])
-
-  const offsets = useRef(new Float32Array(count * 3).fill(0))
+  const colors = useMemo(() => {
+    const col = new Float32Array(count * 3)
+    const purple = new THREE.Color('#C084FC')
+    const blue = new THREE.Color('#60A5FA')
+    const pink = new THREE.Color('#F472B6')
+    const white = new THREE.Color('#E0AAFF')
+    const palette = [purple, blue, pink, white]
+    for (let i = 0; i < count; i++) {
+      const c = palette[Math.floor(Math.random() * palette.length)]
+      col[i * 3] = c.r
+      col[i * 3 + 1] = c.g
+      col[i * 3 + 2] = c.b
+    }
+    return col
+  }, [count])
 
   useFrame((state) => {
     if (!mesh.current) return
-    mesh.current.rotation.y = state.clock.elapsedTime * 0.02
-
-    const segment = scrollProgress * (colorStops.length - 1)
-    const i = Math.min(Math.floor(segment), colorStops.length - 2)
-    const t = segment - i
-    mesh.current.material.color = lerpColor(colorStops[i], colorStops[i + 1], t)
-
     const positions = mesh.current.geometry.attributes.position.array
-    const mx = mouse.x * 6
-    const my = mouse.y * 4
-    const offs = offsets.current
+    const time = state.clock.elapsedTime
 
-    for (let idx = 0; idx < count; idx++) {
-      const ix = idx * 3
+    const tunnelStrength = scrollProgress * scrollProgress
+    const pullSpeed = tunnelStrength * 0.8
+
+    for (let i = 0; i < count; i++) {
+      const ix = i * 3
       const bx = basePositions[ix]
       const by = basePositions[ix + 1]
-      const dx = bx - mx
-      const dy = by - my
-      const dist = Math.sqrt(dx * dx + dy * dy)
-      const radius = 4
-      const strength = 1.5
-      const influence = Math.max(0, 1 - dist / radius)
-      const push = influence * influence * strength
-      const targetX = dist > 0.01 ? (dx / dist) * push : 0
-      const targetY = dist > 0.01 ? (dy / dist) * push : 0
-      offs[ix] += (targetX - offs[ix]) * 0.04
-      offs[ix + 1] += (targetY - offs[ix + 1]) * 0.04
-      positions[ix] = bx + offs[ix]
-      positions[ix + 1] = by + offs[ix + 1]
-      positions[ix + 2] = basePositions[ix + 2]
+      let bz = basePositions[ix + 2]
+
+      bz += time * speeds[i] * (0.3 + pullSpeed * 2)
+
+      if (bz > 20) bz -= 40
+      if (bz < -20) bz += 40
+
+      const zNorm = (bz + 20) / 40
+      const perspective = 1 - zNorm * tunnelStrength * 0.6
+
+      const spiralAngle = time * 0.1 * tunnelStrength
+      const cos = Math.cos(spiralAngle)
+      const sin = Math.sin(spiralAngle)
+
+      let x = bx * perspective
+      let y = by * perspective
+
+      const rotX = x * cos - y * sin
+      const rotY = x * sin + y * cos
+
+      const squeeze = 1 - tunnelStrength * 0.4
+      x = rotX * squeeze
+      y = rotY * squeeze
+
+      const cursorPush = Math.max(0, 1 - Math.sqrt(
+        Math.pow(x - mouse.x * 3, 2) +
+        Math.pow(y - mouse.y * 2, 2)
+      ) / 3) * 0.5
+
+      if (cursorPush > 0) {
+        const dx = x - mouse.x * 3
+        const dy = y - mouse.y * 2
+        const dist = Math.sqrt(dx * dx + dy * dy) || 0.01
+        x += (dx / dist) * cursorPush
+        y += (dy / dist) * cursorPush
+      }
+
+      positions[ix] = x
+      positions[ix + 1] = y
+      positions[ix + 2] = bz
     }
     mesh.current.geometry.attributes.position.needsUpdate = true
+
+   const baseSize = 0.03
+    const stretchSize = baseSize + tunnelStrength * 0.02
+    mesh.current.material.size = stretchSize
+
+    const baseOpacity = 0.7
+    const tunnelOpacity = baseOpacity + tunnelStrength * 0.3
+    mesh.current.material.opacity = tunnelOpacity
   })
 
   return (
-    <points ref={mesh} rotation={[0.5, 0, 0.2]}>
+    <points ref={mesh}>
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[new Float32Array(basePositions), 3]} />
+        <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.06}
-        color="#C084FC"
+        size={0.04}
+        vertexColors
         transparent
-        opacity={0.9}
+        opacity={0.7}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -115,33 +148,78 @@ function GalaxyParticles({ count = 3000, mouse, scrollProgress }) {
   )
 }
 
-function StarDust({ count = 1500, scrollProgress }) {
+function EdgeStreaks({ count = 300, scrollProgress }) {
   const mesh = useRef()
-  const positions = useMemo(() => {
+
+  const basePositions = useMemo(() => {
     const pos = new Float32Array(count * 3)
     for (let i = 0; i < count; i++) {
-      pos[i * 3] = (Math.random() - 0.5) * 40
-      pos[i * 3 + 1] = (Math.random() - 0.5) * 40
-      pos[i * 3 + 2] = (Math.random() - 0.5) * 40
+      const angle = Math.random() * Math.PI * 2
+      const radius = Math.random() * 4 + 6
+      pos[i * 3] = Math.cos(angle) * radius
+      pos[i * 3 + 1] = Math.sin(angle) * radius
+      pos[i * 3 + 2] = Math.random() * 40 - 20
     }
     return pos
   }, [count])
 
-  const colorStops = useMemo(() => [
-    new THREE.Color('#E0AAFF'),
-    new THREE.Color('#93C5FD'),
-    new THREE.Color('#FBCFE8'),
-    new THREE.Color('#E0AAFF'),
-  ], [])
-
   useFrame((state) => {
     if (!mesh.current) return
-    mesh.current.rotation.y = -state.clock.elapsedTime * 0.005
-    mesh.current.rotation.x = state.clock.elapsedTime * 0.003
-    const segment = scrollProgress * (colorStops.length - 1)
-    const i = Math.min(Math.floor(segment), colorStops.length - 2)
-    const t = segment - i
-    mesh.current.material.color = lerpColor(colorStops[i], colorStops[i + 1], t)
+    const positions = mesh.current.geometry.attributes.position.array
+    const time = state.clock.elapsedTime
+    const strength = scrollProgress * scrollProgress
+
+    for (let i = 0; i < count; i++) {
+      const ix = i * 3
+      let z = basePositions[ix + 2] + time * (0.5 + strength * 3)
+      if (z > 20) z -= 40
+      if (z < -20) z += 40
+
+      positions[ix] = basePositions[ix] * (1 - strength * 0.2)
+      positions[ix + 1] = basePositions[ix + 1] * (1 - strength * 0.2)
+      positions[ix + 2] = z
+    }
+    mesh.current.geometry.attributes.position.needsUpdate = true
+
+    mesh.current.material.opacity = strength * 0.6
+    mesh.current.material.size = 0.02 + strength * 0.03
+  })
+
+  return (
+    <points ref={mesh}>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[new Float32Array(basePositions), 3]} />
+      </bufferGeometry>
+      <pointsMaterial
+        size={0.02}
+        color="#E0AAFF"
+        transparent
+        opacity={0}
+        sizeAttenuation
+        blending={THREE.AdditiveBlending}
+        depthWrite={false}
+      />
+    </points>
+  )
+}
+
+function StarField({ count = 800 }) {
+  const mesh = useRef()
+  const positions = useMemo(() => {
+    const pos = new Float32Array(count * 3)
+    for (let i = 0; i < count; i++) {
+      pos[i * 3] = (Math.random() - 0.5) * 50
+      pos[i * 3 + 1] = (Math.random() - 0.5) * 50
+      pos[i * 3 + 2] = (Math.random() - 0.5) * 50
+    }
+    return pos
+  }, [count])
+
+  useFrame((state) => {
+    if (mesh.current) {
+      mesh.current.rotation.y = state.clock.elapsedTime * 0.003
+      mesh.current.rotation.x = state.clock.elapsedTime * 0.002
+    }
   })
 
   return (
@@ -150,10 +228,10 @@ function StarDust({ count = 1500, scrollProgress }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.03}
-        color="#E0AAFF"
+        size={0.02}
+        color="#ffffff"
         transparent
-        opacity={0.6}
+        opacity={0.4}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -162,27 +240,16 @@ function StarDust({ count = 1500, scrollProgress }) {
   )
 }
 
-function CursorLight({ mouse, scrollProgress }) {
+function CursorLight({ mouse }) {
   const light = useRef()
-  const colorStops = useMemo(() => [
-    new THREE.Color('#C084FC'),
-    new THREE.Color('#60A5FA'),
-    new THREE.Color('#F472B6'),
-    new THREE.Color('#C084FC'),
-  ], [])
-
   useFrame(() => {
-    if (!light.current) return
-    light.current.position.x = mouse.x * 8
-    light.current.position.y = mouse.y * 5
-    light.current.position.z = 3
-    const segment = scrollProgress * (colorStops.length - 1)
-    const i = Math.min(Math.floor(segment), colorStops.length - 2)
-    const t = segment - i
-    light.current.color = lerpColor(colorStops[i], colorStops[i + 1], t)
+    if (light.current) {
+      light.current.position.x = mouse.x * 5
+      light.current.position.y = mouse.y * 3
+      light.current.position.z = 5
+    }
   })
-
-  return <pointLight ref={light} intensity={3} distance={15} />
+  return <pointLight ref={light} intensity={2} color="#C084FC" distance={12} />
 }
 
 function Scene() {
@@ -191,23 +258,32 @@ function Scene() {
 
   return (
     <>
-      <ambientLight intensity={0.3} />
-      <pointLight position={[5, 5, 5]} intensity={1.5} color="#C084FC" />
-      <pointLight position={[-5, -3, 3]} intensity={1} color="#AC86B8" />
-      <CursorLight mouse={mouse} scrollProgress={scrollProgress} />
-      <GalaxyParticles mouse={mouse} scrollProgress={scrollProgress} />
-      <StarDust scrollProgress={scrollProgress} />
+      <ambientLight intensity={0.2} />
+      <CursorLight mouse={mouse} />
+      <TunnelParticles scrollProgress={scrollProgress} mouse={mouse} />
+      <EdgeStreaks scrollProgress={scrollProgress} />
+      <StarField />
     </>
   )
 }
 
 export default function ParticleBackground() {
+  const [isMobile, setIsMobile] = useState(false)
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768)
+    const handleResize = () => setIsMobile(window.innerWidth < 768)
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
       <Canvas
-        camera={{ position: [0, 3, 15], fov: 50 }}
+        camera={{ position: [0, 0, isMobile ? 12 : 8], fov: 50 }}
         style={{ background: 'transparent' }}
-        gl={{ alpha: true, antialias: true }}
+        gl={{ alpha: true, antialias: !isMobile }}
+        dpr={isMobile ? 1 : Math.min(window.devicePixelRatio, 2)}
       >
         <Scene />
       </Canvas>
