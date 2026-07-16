@@ -1,145 +1,231 @@
 'use client'
+
 import { useState, useEffect } from 'react'
+
+const WORD = 'INTERACTIVE'
 
 export default function Loader({ onComplete }) {
   const [progress, setProgress] = useState(0)
-  const [status, setStatus] = useState('INITIALIZING SYSTEM...')
   const [visible, setVisible] = useState(true)
+  const [started, setStarted] = useState(false)
 
   useEffect(() => {
-    const messages = [
-      { at: 0, text: 'INITIALIZING SYSTEM...' },
-      { at: 20, text: 'LOADING ASSETS...' },
-      { at: 45, text: 'BUILDING 3D ENVIRONMENT...' },
-      { at: 65, text: 'CALIBRATING XR ENGINE...' },
-      { at: 85, text: 'PREPARING EXPERIENCE...' },
-      { at: 95, text: 'ALMOST READY...' },
-    ]
+    const t = setTimeout(() => setStarted(true), 100)
+    return () => clearTimeout(t)
+  }, [])
 
+  useEffect(() => {
     const interval = setInterval(() => {
       setProgress(prev => {
-        const next = prev + Math.random() * 3 + 1
+        const next = prev + Math.random() * 4 + 1.5
         if (next >= 100) {
           clearInterval(interval)
           setTimeout(() => {
             setVisible(false)
-            setTimeout(() => onComplete(), 500)
-          }, 400)
+            setTimeout(() => onComplete(), 600)
+          }, 500)
           return 100
         }
-        const msg = [...messages].reverse().find(m => next >= m.at)
-        if (msg) setStatus(msg.text)
         return next
       })
-    }, 50)
+    }, 45)
 
     return () => clearInterval(interval)
   }, [onComplete])
 
-  if (!visible) {
-    return (
-      <div style={{
-        position: 'fixed', inset: 0, zIndex: 9999,
-        background: '#0A0A12',
-        display: 'flex', alignItems: 'center', justifyContent: 'center',
-        opacity: 0,
-        transition: 'opacity 0.5s ease',
-        pointerEvents: 'none',
-      }} />
-    )
-  }
-
-  const blocks = 20
-  const filled = Math.floor((progress / 100) * blocks)
+  const letters = WORD.split('')
 
   return (
     <div style={{
-      position: 'fixed', inset: 0, zIndex: 9999,
+      position: 'fixed',
+      inset: 0,
+      zIndex: 9999,
       background: '#0A0A12',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      flexDirection: 'column',
-      gap: '1.5rem',
-      transition: 'opacity 0.5s ease',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      opacity: visible ? 1 : 0,
+      transition: 'opacity 0.6s ease',
+      pointerEvents: visible ? 'auto' : 'none',
+      overflow: 'hidden',
     }}>
-      {/* Logo */}
-      <img src="/logo.png" alt="XR Interactive" style={{
-        height: '150px',
-        marginBottom: '1rem',
-        animation: 'logoPulse 2s ease-in-out infinite',
+
+      {/* Glow behind text */}
+      <div style={{
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: `${320 + progress * 5}px`,
+        height: `${320 + progress * 5}px`,
+        transform: 'translate(-50%, -50%)',
+        background: 'radial-gradient(circle, rgba(192,132,252,0.2) 0%, rgba(113,82,156,0.08) 40%, transparent 70%)',
+        filter: 'blur(20px)',
+        transition: 'width 0.3s ease-out, height 0.3s ease-out',
+        pointerEvents: 'none',
       }} />
 
-      {/* Status text */}
       <div style={{
-        fontFamily: "'Orbitron', monospace",
-        fontSize: '0.8rem',
-        color: '#C084FC',
-        letterSpacing: '0.2em',
-        textAlign: 'center',
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        width: '150px',
+        height: '150px',
+        transform: 'translate(-50%, -50%)',
+        background: 'radial-gradient(circle, rgba(255,255,255,0.15) 0%, transparent 70%)',
+        filter: 'blur(30px)',
+        animation: 'loaderPulse 2.5s ease-in-out infinite',
+        pointerEvents: 'none',
+      }} />
+
+      {/* Top-left logo */}
+      <div style={{
+        position: 'absolute',
+        top: '2rem',
+        left: '2rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: '0.6rem',
+        zIndex: 2,
       }}>
-        {status}
+        <img src="/logo.png" alt="XR Interactive" style={{
+          height: '32px',
+          filter: 'drop-shadow(0 0 15px rgba(192,132,252,0.3))',
+        }} />
+        <span style={{
+          fontFamily: "'Space Grotesk', sans-serif",
+          fontSize: '0.85rem',
+          fontWeight: 600,
+          color: 'rgba(255,255,255,0.7)',
+          letterSpacing: '0.05em',
+        }}>
+          XR Interactive
+        </span>
       </div>
 
-      {/* Progress bar blocks */}
+      {/* Top-right counter */}
+      <div style={{
+        position: 'absolute',
+        top: '2rem',
+        right: '2rem',
+        display: 'flex',
+        alignItems: 'baseline',
+        gap: '0.15rem',
+        fontFamily: "'Space Grotesk', monospace",
+        zIndex: 2,
+      }}>
+        <span style={{
+          fontSize: '1.15rem',
+          fontWeight: 700,
+          color: '#FFFFFF',
+          minWidth: '2.5ch',
+          textAlign: 'right',
+          textShadow: '0 0 20px rgba(192,132,252,0.5)',
+        }}>
+          {String(Math.floor(progress)).padStart(2, '0')}
+        </span>
+        <span style={{
+          fontSize: '0.9rem',
+          color: 'rgba(255,255,255,0.35)',
+        }}>
+          %
+        </span>
+      </div>
+
+      {/* Center word — slides in from the right, staggered */}
       <div style={{
         display: 'flex',
-        gap: '3px',
-        padding: '6px 10px',
-        border: '1px solid rgba(192,132,252,0.3)',
-        borderRadius: '4px',
-        background: 'rgba(22,22,42,0.5)',
+        overflow: 'hidden',
+        position: 'relative',
+        zIndex: 2,
       }}>
-        {Array.from({ length: blocks }).map((_, i) => (
-          <div key={i} style={{
-            width: '14px', height: '20px',
-            background: i < filled ? '#C084FC' : 'rgba(113,82,156,0.15)',
-            borderRadius: '2px',
-            transition: 'background 0.15s ease',
-            boxShadow: i < filled ? '0 0 8px rgba(192,132,252,0.5)' : 'none',
-          }} />
+        {letters.map((letter, i) => (
+          <div
+            key={i}
+            style={{
+              overflow: 'hidden',
+              display: 'inline-block',
+            }}
+          >
+            <span
+              style={{
+                display: 'inline-block',
+                fontFamily: "'Space Grotesk', sans-serif",
+                fontSize: 'clamp(1.8rem, 6.5vw, 4.5rem)',
+                fontWeight: 700,
+                letterSpacing: '0.01em',
+                background: 'linear-gradient(135deg, #71529C 0%, #C084FC 50%, #E0AAFF 100%)',
+                WebkitBackgroundClip: 'text',
+                backgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                filter: 'drop-shadow(0 0 25px rgba(192,132,252,0.4))',
+                transform: started ? 'translateX(0)' : 'translateX(100%)',
+                opacity: started ? 1 : 0,
+                transition: `transform 0.7s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.5s ease`,
+                transitionDelay: `${i * 0.045}s`,
+              }}
+            >
+              {letter === ' ' ? '\u00A0' : letter}
+            </span>
+          </div>
         ))}
       </div>
 
-      {/* Percentage */}
-      <div style={{
-        fontFamily: "'Orbitron', monospace",
-        fontSize: '1.5rem',
-        fontWeight: 700,
-        color: '#E0AAFF',
-        letterSpacing: '0.1em',
-      }}>
-        {Math.floor(progress)}%
-      </div>
-
-      {/* Bottom decorative text */}
+      {/* Bottom progress bar */}
       <div style={{
         position: 'absolute',
-        bottom: '2rem',
-        fontFamily: "'Orbitron', monospace",
-        fontSize: '0.6rem',
-        color: 'rgba(138,138,160,0.5)',
-        letterSpacing: '0.3em',
-        textTransform: 'uppercase',
+        bottom: '2.5rem',
+        left: '2rem',
+        right: '2rem',
+        height: '1px',
+        background: 'rgba(255,255,255,0.08)',
+        overflow: 'hidden',
+        zIndex: 2,
       }}>
-        XR Interactive — Immersive Technology Studio
+        <div style={{
+          height: '100%',
+          width: `${progress}%`,
+          background: 'linear-gradient(90deg, #71529C, #C084FC)',
+          boxShadow: '0 0 10px rgba(192,132,252,0.6)',
+          transition: 'width 0.1s ease-out',
+        }} />
       </div>
 
-      {/* Corner decorations */}
-      <svg style={{ position: 'absolute', top: '2rem', left: '2rem', opacity: 0.3 }} width="40" height="40">
-        <line x1="0" y1="0" x2="40" y2="0" stroke="#C084FC" strokeWidth="1" />
-        <line x1="0" y1="0" x2="0" y2="40" stroke="#C084FC" strokeWidth="1" />
-      </svg>
-      <svg style={{ position: 'absolute', top: '2rem', right: '2rem', opacity: 0.3 }} width="40" height="40">
-        <line x1="0" y1="0" x2="40" y2="0" stroke="#C084FC" strokeWidth="1" />
-        <line x1="40" y1="0" x2="40" y2="40" stroke="#C084FC" strokeWidth="1" />
-      </svg>
-      <svg style={{ position: 'absolute', bottom: '4rem', left: '2rem', opacity: 0.3 }} width="40" height="40">
-        <line x1="0" y1="40" x2="40" y2="40" stroke="#C084FC" strokeWidth="1" />
-        <line x1="0" y1="0" x2="0" y2="40" stroke="#C084FC" strokeWidth="1" />
-      </svg>
-      <svg style={{ position: 'absolute', bottom: '4rem', right: '2rem', opacity: 0.3 }} width="40" height="40">
-        <line x1="0" y1="40" x2="40" y2="40" stroke="#C084FC" strokeWidth="1" />
-        <line x1="40" y1="0" x2="40" y2="40" stroke="#C084FC" strokeWidth="1" />
-      </svg>
+      {/* Bottom-left tag */}
+      <div style={{
+        position: 'absolute',
+        bottom: '1rem',
+        left: '2rem',
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: '0.65rem',
+        color: 'rgba(255,255,255,0.3)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.15em',
+        zIndex: 2,
+      }}>
+        Immersive Technology Studio
+      </div>
+
+      {/* Bottom-right status */}
+      <div style={{
+        position: 'absolute',
+        bottom: '1rem',
+        right: '2rem',
+        fontFamily: "'Space Grotesk', sans-serif",
+        fontSize: '0.65rem',
+        color: 'rgba(255,255,255,0.3)',
+        textTransform: 'uppercase',
+        letterSpacing: '0.15em',
+        zIndex: 2,
+      }}>
+        {progress < 100 ? 'Loading' : 'Ready'}
+      </div>
+
+      <style>{`
+        @keyframes loaderPulse {
+          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.15); }
+        }
+      `}</style>
     </div>
   )
 }

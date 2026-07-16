@@ -1,7 +1,18 @@
-'use client'
-import WordReveal from '@/components/WordReveal'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { blogs } from '@/data'
+
+export const metadata = {
+  title: 'Blog',
+  description: 'Insights on immersive technology, AR/VR, and interactive experiences.',
+  alternates: {
+    canonical: '/blog',
+  },
+  openGraph: {
+    title: 'Blog | XR Interactive',
+    description: 'Insights on immersive technology, AR/VR, and interactive experiences.',
+    url: '/blog',
+  },
+}
 
 export default function Blog() {
   return (

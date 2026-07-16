@@ -1,11 +1,12 @@
-@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Departure+Mono&display=swap');
+
+    @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600&family=Departure+Mono&display=swap');
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 html {
   scroll-behavior: smooth;
 }
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Lenis-style smooth scroll feel */
@@ -15,18 +16,18 @@ body {
 
 
 :root {
-  --bg-primary: #0A0A12;
-  --bg-secondary: #12121E;
-  --bg-card: #16162A;
-  --bg-card-hover: #1C1C36;
+  --bg-primary: #0C0812;
+--bg-secondary: #150E22;
+--bg-card: #1A1028;
+--bg-card-hover: #221435;
   --purple: #71529C;
   --purple-light: #AC86B8;
   --purple-glow: #9B6FC5;
   --purple-dark: #4A3268;
   --accent: #C084FC;
-  --text-primary: #F0F0F5;
-  --text-secondary: #8A8AA0;
-  --text-muted: #5A5A72;
+  --text-primary: #FFFFFF;
+--text-secondary: #B0B0C5;
+--text-muted: #7A7A95;
   --border: rgba(113,82,156,0.15);
   --gradient: linear-gradient(135deg, #71529C 0%, #AC86B8 50%, #C084FC 100%);
   --gradient-dark: linear-gradient(135deg, #71529C 0%, #4A3268 100%);
@@ -41,7 +42,7 @@ body {
   background: var(--bg-primary);
   color: var(--text-primary);
   line-height: 1.6;
-  overflow-x: hidden;
+  overflow-x: clip;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -126,9 +127,13 @@ ul { list-style: none; }
 
 /* ============ HERO ============ */
 .hero {
-  min-height: 100vh; display: flex; align-items: center;
-  padding: calc(var(--nav-height) + 2rem) clamp(1.5rem, 5vw, 4rem) 4rem;
-  position: relative; overflow: hidden;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  position: relative;
+  overflow: hidden;
 }
 .hero-bg {
   position: absolute; inset: 0; z-index: 0;
@@ -137,7 +142,7 @@ ul { list-style: none; }
   content: ''; position: absolute; inset: 0;
   background: radial-gradient(ellipse 80% 60% at 50% 40%, rgba(113,82,156,0.15) 0%, transparent 70%);
 }
-.hero-grid {
+.hero-grid-bg {
   position: absolute; inset: 0; opacity: 0.04;
   background-image:
     linear-gradient(rgba(172,134,184,0.3) 1px, transparent 1px),
@@ -158,14 +163,19 @@ ul { list-style: none; }
   font-family: var(--font-display); font-size: clamp(2.8rem, 6vw, 5rem);
   font-weight: 700; line-height: 1.1; margin-bottom: 1.5rem;
   letter-spacing: -0.02em;
+  color: #FFFFFF !important;
 }
-.hero h1 .gradient-text {
- background: var(--gradient); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+.hero h1 .gradient-text,
+.gradient-text {
+  background: linear-gradient(135deg, #C084FC 0%, #E0AAFF 50%, #C084FC 100%);
+  -webkit-background-clip: text;
   background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 .hero p {
   font-size: clamp(1rem, 1.5vw, 1.2rem); color: var(--text-secondary);
   max-width: 600px; margin-bottom: 2.5rem; line-height: 1.7;
+  
 }
 .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
 .btn-primary {
@@ -254,6 +264,7 @@ ul { list-style: none; }
   position: relative; overflow: hidden;
   display: flex; flex-direction: column;
   backdrop-filter: blur(10px);
+  height: 100%;
 }
 
 .service-card:hover {
@@ -521,6 +532,12 @@ ul { list-style: none; }
     justify-content: center;
     text-align: center;
   }
+  .hero-grid {
+    grid-template-columns: 1fr !important;
+    padding-top: calc(var(--nav-height) + 2rem) !important;
+    min-height: auto !important;
+  }
+
 
   /* Stats */
   .stats-section {
@@ -536,8 +553,11 @@ ul { list-style: none; }
 
   /* Sections */
   .section {
-    padding: 3rem 1.25rem;
-  }
+  padding: clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem);
+  max-width: 1300px; margin: 0 auto;
+  overflow: visible;
+  position: relative;
+}
   .section-title {
     font-size: clamp(1.2rem, 4vw, 1.6rem);
   }
@@ -805,7 +825,7 @@ ul { list-style: none; }
 
 /* Fix overflow on mobile */
 html, body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 .marquee-row {
   display: flex;
@@ -827,7 +847,7 @@ html, body {
   }
   section {
     max-width: 100vw;
-    overflow-x: hidden;
+    overflow-x: clip;
   }
   /* Force all multi-column service layouts to stack */
   [style*="direction: rtl"] {
@@ -837,3 +857,155 @@ html, body {
 
 @keyframes marquee { to { transform: translateX(-50%); } }
 @keyframes marqueeReverse { from { transform: translateX(-50%); } to { transform: translateX(0); }} 
+
+/* ============ SECTION MOOD BACKGROUNDS ============ */
+body {
+  background: #0C0812;
+}
+
+.hero {
+  background: radial-gradient(ellipse 120% 80% at 70% 20%, rgba(113,82,156,0.2) 0%, transparent 60%),
+              rgba(12,8,18,0.7);
+}
+
+.stats-section {
+  background: rgba(26,16,53,0.75);
+}
+
+.section-services {
+  background: radial-gradient(ellipse 70% 50% at 30% 50%, rgba(96,165,250,0.06) 0%, transparent 60%),
+              rgba(12,8,18,0.75);
+}
+
+.section-howitworks {
+  background: radial-gradient(ellipse 60% 50% at 60% 50%, rgba(139,92,246,0.1) 0%, transparent 60%),
+              rgba(21,14,34,0.75);
+}
+
+.section-portfolio {
+  background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(113,82,156,0.1) 0%, transparent 60%),
+              rgba(12,8,18,0.75);
+}
+
+.section-logos {
+  background: rgba(21,14,34,0.7);
+}
+
+.section-cta {
+  background: radial-gradient(ellipse 60% 50% at 50% 50%, rgba(192,132,252,0.15) 0%, transparent 60%),
+              rgba(18,12,28,0.75);
+}
+
+.footer {
+  background: rgba(10,7,16,0.9);
+  border-top: 1px solid rgba(113,82,156,0.15);
+}
+.hero h1 {
+  color: #FFFFFF !important;
+}
+
+.hero p {
+  color: #B0B0C5 !important;
+}
+
+.hero-badge, .hero .hero-badge {
+  color: #C084FC !important;
+}
+
+@media (max-width: 768px) {
+  .section-services > div {
+    height: auto !important;
+  }
+  .section-services > div > div {
+    position: relative !important;
+    height: auto !important;
+  }
+  .section-services > div > div > div:last-child {
+    transform: none !important;
+    overflow-x: auto !important;
+    flex-wrap: nowrap !important;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+  }
+  .section-services > div > div > div:last-child > a {
+    scroll-snap-align: start;
+  }
+}
+
+@media (max-width: 768px) {
+  .section-services > div > div > div:nth-child(2) {
+    max-width: 100% !important;
+  }
+  .section-services > div > div > div:nth-child(2) > div > a > div {
+    grid-template-columns: 1fr !important;
+  }
+  .section-services > div > div > div:nth-child(2) > div > a > div > div:first-child {
+    min-height: 200px !important;
+  }
+}
+
+.stack-card:hover {
+  border-color: rgba(192,132,252,0.5) !important;
+  box-shadow: 0 20px 60px rgba(113,82,156,0.2), 0 0 30px rgba(192,132,252,0.08) !important;
+  transform: scale(1.01);
+}
+
+@media (max-width: 768px) {
+  .stack-card {
+    grid-template-columns: 1fr !important;
+  }
+  /* Icon block and text spacing are sized for desktop's side-by-side layout;
+     stacked on mobile they made each card nearly a full screen tall, so the
+     scroll-driven stack transition needed almost a whole swipe per card. */
+  .stack-card > div:first-child {
+    min-height: 200px !important;
+    padding: 1.25rem 1.5rem !important;
+  }
+  .stack-card > div:first-child:has(img) {
+    padding: 0 !important;
+  }
+  .stack-card > div:last-child {
+    padding: 1.25rem !important;
+  }
+  .stack-card > div:last-child h3 {
+    margin-bottom: 0.5rem !important;
+    font-size: 1.1rem !important;
+  }
+  .stack-card > div:last-child p {
+    margin-bottom: 0.85rem !important;
+    line-height: 1.5 !important;
+  }
+  .stack-card > div:last-child > div:first-of-type {
+    margin-bottom: 0.85rem !important;
+    gap: 0.4rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .services-grid-page {
+    grid-template-columns: 1fr !important;
+  }
+  .service-detail-grid {
+    grid-template-columns: 1fr !important;
+  }
+  .service-detail-grid > div {
+    order: unset !important;
+  }
+  .service-detail-grid > div:last-child {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .stack-card {
+    grid-template-columns: 1fr !important;
+  }
+  .stack-card > div:first-child {
+    min-height: 220px !important;
+    aspect-ratio: 16/10;
+  }
+  .stack-card img {
+    object-fit: cover !important;
+    object-position: center !important;
+  }
+}

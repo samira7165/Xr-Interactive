@@ -17,22 +17,7 @@ function useScrollProgress() {
   return progress
 }
 
-function useMouse() {
-  const [mouse, setMouse] = useState({ x: 0, y: 0 })
-  useEffect(() => {
-    const handleMove = (e) => {
-      setMouse({
-        x: (e.clientX / window.innerWidth) * 2 - 1,
-        y: -(e.clientY / window.innerHeight) * 2 + 1,
-      })
-    }
-    window.addEventListener('mousemove', handleMove)
-    return () => window.removeEventListener('mousemove', handleMove)
-  }, [])
-  return mouse
-}
-
-function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
+function TunnelParticles({ count = 2500, scrollProgress }) {
   const mesh = useRef()
 
   const { basePositions, speeds } = useMemo(() => {
@@ -51,11 +36,12 @@ function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
 
   const colors = useMemo(() => {
     const col = new Float32Array(count * 3)
-    const purple = new THREE.Color('#C084FC')
-    const blue = new THREE.Color('#60A5FA')
-    const pink = new THREE.Color('#F472B6')
-    const white = new THREE.Color('#E0AAFF')
-    const palette = [purple, blue, pink, white]
+    const palette = [
+      new THREE.Color('#C084FC'),
+      new THREE.Color('#60A5FA'),
+      new THREE.Color('#F472B6'),
+      new THREE.Color('#E0AAFF'),
+    ]
     for (let i = 0; i < count; i++) {
       const c = palette[Math.floor(Math.random() * palette.length)]
       col[i * 3] = c.r
@@ -69,7 +55,6 @@ function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
     if (!mesh.current) return
     const positions = mesh.current.geometry.attributes.position.array
     const time = state.clock.elapsedTime
-
     const tunnelStrength = scrollProgress * scrollProgress
     const pullSpeed = tunnelStrength * 0.8
 
@@ -80,53 +65,21 @@ function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
       let bz = basePositions[ix + 2]
 
       bz += time * speeds[i] * (0.3 + pullSpeed * 2)
-
       if (bz > 20) bz -= 40
       if (bz < -20) bz += 40
 
       const zNorm = (bz + 20) / 40
       const perspective = 1 - zNorm * tunnelStrength * 0.6
-
-      const spiralAngle = time * 0.1 * tunnelStrength
-      const cos = Math.cos(spiralAngle)
-      const sin = Math.sin(spiralAngle)
-
-      let x = bx * perspective
-      let y = by * perspective
-
-      const rotX = x * cos - y * sin
-      const rotY = x * sin + y * cos
-
       const squeeze = 1 - tunnelStrength * 0.4
-      x = rotX * squeeze
-      y = rotY * squeeze
 
-      const cursorPush = Math.max(0, 1 - Math.sqrt(
-        Math.pow(x - mouse.x * 3, 2) +
-        Math.pow(y - mouse.y * 2, 2)
-      ) / 3) * 0.5
-
-      if (cursorPush > 0) {
-        const dx = x - mouse.x * 3
-        const dy = y - mouse.y * 2
-        const dist = Math.sqrt(dx * dx + dy * dy) || 0.01
-        x += (dx / dist) * cursorPush
-        y += (dy / dist) * cursorPush
-      }
-
-      positions[ix] = x
-      positions[ix + 1] = y
+      positions[ix] = bx * perspective * squeeze
+      positions[ix + 1] = by * perspective * squeeze
       positions[ix + 2] = bz
     }
     mesh.current.geometry.attributes.position.needsUpdate = true
 
-   const baseSize = 0.03
-    const stretchSize = baseSize + tunnelStrength * 0.02
-    mesh.current.material.size = stretchSize
-
-    const baseOpacity = 0.7
-    const tunnelOpacity = baseOpacity + tunnelStrength * 0.3
-    mesh.current.material.opacity = tunnelOpacity
+    mesh.current.material.size = 0.015 + tunnelStrength * 0.008
+    mesh.current.material.opacity = 0.8 + tunnelStrength * 0.2
   })
 
   return (
@@ -136,10 +89,10 @@ function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.04}
+        size={0.015}
         vertexColors
         transparent
-        opacity={0.7}
+        opacity={0.8}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -148,62 +101,7 @@ function TunnelParticles({ count = 2000, scrollProgress, mouse }) {
   )
 }
 
-function EdgeStreaks({ count = 300, scrollProgress }) {
-  const mesh = useRef()
-
-  const basePositions = useMemo(() => {
-    const pos = new Float32Array(count * 3)
-    for (let i = 0; i < count; i++) {
-      const angle = Math.random() * Math.PI * 2
-      const radius = Math.random() * 4 + 6
-      pos[i * 3] = Math.cos(angle) * radius
-      pos[i * 3 + 1] = Math.sin(angle) * radius
-      pos[i * 3 + 2] = Math.random() * 40 - 20
-    }
-    return pos
-  }, [count])
-
-  useFrame((state) => {
-    if (!mesh.current) return
-    const positions = mesh.current.geometry.attributes.position.array
-    const time = state.clock.elapsedTime
-    const strength = scrollProgress * scrollProgress
-
-    for (let i = 0; i < count; i++) {
-      const ix = i * 3
-      let z = basePositions[ix + 2] + time * (0.5 + strength * 3)
-      if (z > 20) z -= 40
-      if (z < -20) z += 40
-
-      positions[ix] = basePositions[ix] * (1 - strength * 0.2)
-      positions[ix + 1] = basePositions[ix + 1] * (1 - strength * 0.2)
-      positions[ix + 2] = z
-    }
-    mesh.current.geometry.attributes.position.needsUpdate = true
-
-    mesh.current.material.opacity = strength * 0.6
-    mesh.current.material.size = 0.02 + strength * 0.03
-  })
-
-  return (
-    <points ref={mesh}>
-      <bufferGeometry>
-        <bufferAttribute attach="attributes-position" args={[new Float32Array(basePositions), 3]} />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.02}
-        color="#E0AAFF"
-        transparent
-        opacity={0}
-        sizeAttenuation
-        blending={THREE.AdditiveBlending}
-        depthWrite={false}
-      />
-    </points>
-  )
-}
-
-function StarField({ count = 800 }) {
+function StarDust({ count = 1200 }) {
   const mesh = useRef()
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3)
@@ -228,10 +126,10 @@ function StarField({ count = 800 }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.02}
+        size={0.008}
         color="#ffffff"
         transparent
-        opacity={0.4}
+        opacity={0.7}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -240,29 +138,13 @@ function StarField({ count = 800 }) {
   )
 }
 
-function CursorLight({ mouse }) {
-  const light = useRef()
-  useFrame(() => {
-    if (light.current) {
-      light.current.position.x = mouse.x * 5
-      light.current.position.y = mouse.y * 3
-      light.current.position.z = 5
-    }
-  })
-  return <pointLight ref={light} intensity={2} color="#C084FC" distance={12} />
-}
-
 function Scene() {
-  const mouse = useMouse()
   const scrollProgress = useScrollProgress()
-
   return (
     <>
       <ambientLight intensity={0.2} />
-      <CursorLight mouse={mouse} />
-      <TunnelParticles scrollProgress={scrollProgress} mouse={mouse} />
-      <EdgeStreaks scrollProgress={scrollProgress} />
-      <StarField />
+      <TunnelParticles scrollProgress={scrollProgress} />
+      <StarDust />
     </>
   )
 }
@@ -278,7 +160,7 @@ export default function ParticleBackground() {
   }, [])
 
   return (
-    <div style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none' }}>
+    <div style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none' }}>
       <Canvas
         camera={{ position: [0, 0, isMobile ? 12 : 8], fov: 50 }}
         style={{ background: 'transparent' }}

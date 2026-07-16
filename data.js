@@ -9,7 +9,7 @@ export const services = [
   },
   {
     id: 'games',
-    icon: 'Joystick',
+    icon: 'Gamepad2',
     title: 'Game Design & Development',
     short: 'Engaging games that captivate players and elevate brand experiences.',
     description: 'We create branded games, hyper-casual mobile games, and interactive experiences that drive engagement. From concept art to deployment, our team handles the full game development pipeline.',
@@ -17,7 +17,7 @@ export const services = [
   },
   {
     id: 'events',
-    icon: 'Events',
+    icon: 'PartyPopper',
     title: 'Event Activation',
     short: 'Turn events into unforgettable interactive experiences.',
     description: 'We bring technology to physical spaces with VR gaming zones, AR photo booths, interactive installations, and digital activations that make your events impossible to forget.',
@@ -25,7 +25,7 @@ export const services = [
   },
   {
     id: 'web',
-    icon: 'Web',
+    icon: 'Globe',
     title: 'Web & App Solutions',
     short: 'Full-stack development for modern, performant digital products.',
     description: 'From responsive websites to progressive web apps and mobile applications, we build digital products that are fast, accessible, and built to scale.',
@@ -33,7 +33,7 @@ export const services = [
   },
   {
     id: 'ai',
-    icon: 'Iot',
+    icon: 'Sparkles',
     title: 'AI & Generative Solutions',
     short: 'AI-powered tools and generative experiences for next-gen campaigns.',
     description: 'Leverage artificial intelligence for chatbots, generative content, AI-powered filters, and intelligent automation that transform how your brand engages with audiences.',
@@ -41,7 +41,7 @@ export const services = [
   },
   {
     id: 'iot',
-    icon: '📡',
+    icon: 'Radio',
     title: 'IoT Solutions',
     short: 'Connected devices and smart systems for the physical world.',
     description: 'We design and build Internet of Things solutions that connect physical spaces to digital intelligence, enabling smart monitoring, automation, and data-driven insights.',
@@ -50,90 +50,18 @@ export const services = [
 ]
 
 export const portfolio = [
-  {
-    id: 1,
-    title: 'VR Cricket Experience',
-    category: 'VR',
-    description: 'An immersive VR cricket simulation built for event activations across Bangladesh.',
-    image: 'https://xri.com.bd/frontend/images/gallery/G1.png',
-  },
-  {
-    id: 2,
-    title: 'VR Travel Experience',
-    category: 'VR',
-    description: 'Virtual reality travel experience showcasing destinations in stunning 360°.',
-    image: 'https://xri.com.bd/frontend/images/gallery/G5.png',
-  },
-  {
-    id: 3,
-    title: 'VR Adventure Game',
-    category: 'VR',
-    description: 'Action-packed VR game designed for arcade and event setups.',
-    image: 'https://xri.com.bd/frontend/images/gallery/G4.png',
-  },
-  {
-    id: 4,
-    title: 'Branded AR Filter',
-    category: 'AR',
-    description: 'Custom AR face filters for social media brand campaigns.',
-    image: 'https://xri.com.bd/frontend/images/gallery/AR/5.PNG',
-  },
-  {
-    id: 5,
-    title: 'AR Product Visualization',
-    category: 'AR',
-    description: 'Augmented reality product try-on experience for retail brands.',
-    image: 'https://xri.com.bd/frontend/images/gallery/AR/A5.jpg',
-  },
-  {
-    id: 6,
-    title: 'AR Face Effects',
-    category: 'AR',
-    description: 'Interactive face tracking AR effects for brand engagement.',
-    image: 'https://xri.com.bd/frontend/images/gallery/AR/A6.jpg',
-  },
-  {
-    id: 7,
-    title: 'Boi Mela VR Activation',
-    category: 'Event',
-    description: 'Virtual reality experience booth at Ekushey Boi Mela, Dhaka.',
-    image: 'https://xri.com.bd/frontend/images/gallery/Event/E8.jpg',
-  },
-  {
-    id: 8,
-    title: 'VR Distribution Event',
-    category: 'Event',
-    description: 'Large-scale VR activation for a product distribution event.',
-    image: 'https://xri.com.bd/frontend/images/gallery/Event/E4.jpg',
-  },
-  {
-    id: 9,
-    title: 'Corporate VR Tour',
-    category: 'Event',
-    description: 'Custom VR tour experience for corporate event guests.',
-    image: 'https://xri.com.bd/frontend/images/gallery/Event/E7.jpg',
-  },
-  {
-    id: 10,
-    title: 'Brand Campaign Activation',
-    category: 'Campaign',
-    description: 'Interactive tech-powered brand campaign with AR and VR elements.',
-    image: 'https://xri.com.bd/frontend/images/gallery/Event/E1.jpg',
-  },
-  {
-    id: 11,
-    title: 'VR Gaming Zone',
-    category: 'VR',
-    description: 'Multi-station VR gaming setup for entertainment venues.',
-    image: 'https://xri.com.bd/frontend/images/gallery/G2.png',
-  },
-  {
-    id: 12,
-    title: 'Social Media AR Campaign',
-    category: 'AR',
-    description: 'Viral AR filter campaign for Instagram and Facebook.',
-    image: 'https://xri.com.bd/frontend/images/gallery/AR/A8.jpg',
-  },
+  { id: 1, title: 'VR Cricket Experience', category: 'VR', description: 'An immersive VR cricket simulation built for event activations across Bangladesh.', image: 'https://xri.com.bd/frontend/images/gallery/G1.png' },
+  { id: 2, title: 'VR Travel Experience', category: 'VR', description: 'Virtual reality travel experience showcasing destinations in stunning 360°.', image: 'https://xri.com.bd/frontend/images/gallery/G5.png' },
+  { id: 3, title: 'VR Adventure Game', category: 'VR', description: 'Action-packed VR game designed for arcade and event setups.', image: 'https://xri.com.bd/frontend/images/gallery/G4.png' },
+  { id: 4, title: 'Branded AR Filter', category: 'AR', description: 'Custom AR face filters for social media brand campaigns.', image: 'https://xri.com.bd/frontend/images/gallery/AR/5.PNG' },
+  { id: 5, title: 'AR Product Visualization', category: 'AR', description: 'Augmented reality product try-on experience for retail brands.', image: 'https://xri.com.bd/frontend/images/gallery/AR/A5.jpg' },
+  { id: 6, title: 'AR Face Effects', category: 'AR', description: 'Interactive face tracking AR effects for brand engagement.', image: 'https://xri.com.bd/frontend/images/gallery/AR/A6.jpg' },
+  { id: 7, title: 'Boi Mela VR Activation', category: 'Event', description: 'Virtual reality experience booth at Ekushey Boi Mela, Dhaka.', image: 'https://xri.com.bd/frontend/images/gallery/Event/E8.jpg' },
+  { id: 8, title: 'VR Distribution Event', category: 'Event', description: 'Large-scale VR activation for a product distribution event.', image: 'https://xri.com.bd/frontend/images/gallery/Event/E4.jpg' },
+  { id: 9, title: 'Corporate VR Tour', category: 'Event', description: 'Custom VR tour experience for corporate event guests.', image: 'https://xri.com.bd/frontend/images/gallery/Event/E7.jpg' },
+  { id: 10, title: 'Brand Campaign Activation', category: 'Campaign', description: 'Interactive tech-powered brand campaign with AR and VR elements.', image: 'https://xri.com.bd/frontend/images/gallery/Event/E1.jpg' },
+  { id: 11, title: 'VR Gaming Zone', category: 'VR', description: 'Multi-station VR gaming setup for entertainment venues.', image: 'https://xri.com.bd/frontend/images/gallery/G2.png' },
+  { id: 12, title: 'Social Media AR Campaign', category: 'AR', description: 'Viral AR filter campaign for Instagram and Facebook.', image: 'https://xri.com.bd/frontend/images/gallery/AR/A8.jpg' },
 ]
 
 export const team = [
@@ -146,54 +74,12 @@ export const team = [
 ]
 
 export const blogs = [
-  {
-    id: 1,
-    title: 'How AR is Transforming Brand Marketing in Bangladesh',
-    excerpt: 'Augmented reality is opening up new possibilities for brands looking to create memorable, interactive campaigns in the Bangladeshi market.',
-    date: 'June 15, 2025',
-    category: 'AR/VR',
-    image: 'https://xri.com.bd/frontend/images/gallery/AR/4.PNG',
-  },
-  {
-    id: 2,
-    title: 'Building VR Experiences for Live Events',
-    excerpt: 'A behind-the-scenes look at how we design and deploy VR gaming zones for large-scale events and activations.',
-    date: 'May 28, 2025',
-    category: 'Events',
-    image: 'https://xri.com.bd/frontend/images/gallery/Event/E2.jpg',
-  },
-  {
-    id: 3,
-    title: 'The Future of WebAR: No App Required',
-    excerpt: 'Web-based augmented reality is making immersive experiences accessible to everyone through just a browser.',
-    date: 'May 10, 2025',
-    category: 'Technology',
-    image: 'https://xri.com.bd/frontend/images/gallery/G8.png',
-  },
-  {
-    id: 4,
-    title: 'Why Brands Need Gamification in 2025',
-    excerpt: 'From playable ads to branded hyper-casual games, gamification is driving deeper engagement and better ROI.',
-    date: 'April 22, 2025',
-    category: 'Gaming',
-    image: 'https://xri.com.bd/frontend/images/gallery/G3.png',
-  },
-  {
-    id: 5,
-    title: 'Our Journey: From Startup to 100+ Projects',
-    excerpt: 'Reflecting on how XR Interactive grew from a small Dhaka startup to delivering over 100 immersive projects.',
-    date: 'April 5, 2025',
-    category: 'Company',
-    image: 'https://xri.com.bd/frontend/images/gallery/Event/E3.jpg',
-  },
-  {
-    id: 6,
-    title: 'AI Meets AR: Generative Filters for Social Media',
-    excerpt: 'Exploring how generative AI is being combined with AR to create one-of-a-kind social media experiences.',
-    date: 'March 18, 2025',
-    category: 'AI',
-    image: 'https://xri.com.bd/frontend/images/gallery/AR/6.PNG',
-  },
+  { id: 1, title: 'How AR is Transforming Brand Marketing in Bangladesh', excerpt: 'Augmented reality is opening up new possibilities for brands looking to create memorable, interactive campaigns in the Bangladeshi market.', date: 'June 15, 2025', category: 'AR/VR', image: 'https://xri.com.bd/frontend/images/gallery/AR/4.PNG' },
+  { id: 2, title: 'Building VR Experiences for Live Events', excerpt: 'A behind-the-scenes look at how we design and deploy VR gaming zones for large-scale events and activations.', date: 'May 28, 2025', category: 'Events', image: 'https://xri.com.bd/frontend/images/gallery/Event/E2.jpg' },
+  { id: 3, title: 'The Future of WebAR: No App Required', excerpt: 'Web-based augmented reality is making immersive experiences accessible to everyone through just a browser.', date: 'May 10, 2025', category: 'Technology', image: 'https://xri.com.bd/frontend/images/gallery/G8.png' },
+  { id: 4, title: 'Why Brands Need Gamification in 2025', excerpt: 'From playable ads to branded hyper-casual games, gamification is driving deeper engagement and better ROI.', date: 'April 22, 2025', category: 'Gaming', image: 'https://xri.com.bd/frontend/images/gallery/G3.png' },
+  { id: 5, title: 'Our Journey: From Startup to 100+ Projects', excerpt: 'Reflecting on how XR Interactive grew from a small Dhaka startup to delivering over 100 immersive projects.', date: 'April 5, 2025', category: 'Company', image: 'https://xri.com.bd/frontend/images/gallery/Event/E3.jpg' },
+  { id: 6, title: 'AI Meets AR: Generative Filters for Social Media', excerpt: 'Exploring how generative AI is being combined with AR to create one-of-a-kind social media experiences.', date: 'March 18, 2025', category: 'AI', image: 'https://xri.com.bd/frontend/images/gallery/AR/6.PNG' },
 ]
 
 export const stats = [

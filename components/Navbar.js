@@ -41,7 +41,7 @@ export default function Navbar() {
           overflow: 'hidden',
           transition: 'all 0.5s ease',
         }}>
-          <img src="/logo.png" alt="XR Interactive" style={{ height: '150px' }} />
+          <Image src="/logo.png" alt="XR Interactive" width={150} height={150} priority />
         </Link>
 
         <div className="nav-links" style={{

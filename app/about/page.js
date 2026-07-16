@@ -1,15 +1,27 @@
-'use client'
 import Link from 'next/link'
-
 import WordReveal from '@/components/WordReveal'
 import { ScrollReveal, Parallax } from '@/components/ScrollReveal'
 import { team } from '@/data'
 
+export const metadata = {
+  title: 'About Us',
+  description: 'Meet the team behind Bangladesh\'s leading AR, VR, and immersive technology studio.',
+  alternates: {
+    canonical: '/about',
+  },
+  openGraph: {
+    title: 'About Us | XR Interactive',
+    description: 'Meet the team behind Bangladesh\'s leading AR, VR, and immersive technology studio.',
+    url: '/about',
+  },
+}
+
+
 const values = [
-  { icon: '🚀', title: 'Innovation First', desc: 'We stay ahead of the curve, constantly exploring new technologies to deliver experiences that push boundaries.' },
-  { icon: '🤝', title: 'Client-Centered', desc: 'Your goals drive our process. We collaborate closely to ensure every solution aligns with your vision and delivers results.' },
-  { icon: '🎯', title: 'Quality Obsessed', desc: 'From concept to deployment, we maintain the highest standards of quality in design, development, and delivery.' },
-  { icon: '🌏', title: 'Impact Driven', desc: 'We build solutions that create real impact — memorable experiences that engage audiences and drive measurable outcomes.' },
+  {  title: 'Innovation First', desc: 'We stay ahead of the curve, constantly exploring new technologies to deliver experiences that push boundaries.' },
+  {  title: 'Client-Centered', desc: 'Your goals drive our process. We collaborate closely to ensure every solution aligns with your vision and delivers results.' },
+  {  title: 'Quality Obsessed', desc: 'From concept to deployment, we maintain the highest standards of quality in design, development, and delivery.' },
+  {  title: 'Impact Driven', desc: 'We build solutions that create real impact — memorable experiences that engage audiences and drive measurable outcomes.' },
 ]
 
 export default function About() {
