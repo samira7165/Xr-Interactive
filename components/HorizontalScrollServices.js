@@ -2,57 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react'
 import Link from 'next/link'
-
-const services = [
-  {
-    title: 'AR/VR & Mixed Reality',
-    desc: 'Immersive experiences that blur the line between digital and physical worlds.',
-    tag: 'XR',
-    gradient: 'linear-gradient(135deg, #2D1B69 0%, #1A1035 100%)',
-    features: ['VR Games', 'AR Filters', 'WebAR', '360° Tours'],
-    images: ['/services/arvr/G3.png', '/services/arvr/G4.png', '/services/arvr/G5.png'],
-  },
-  {
-    title: 'Game Design & Development',
-    desc: 'Engaging games that captivate players and elevate brand experiences.',
-    tag: 'Gaming',
-    gradient: 'linear-gradient(135deg, #1B2969 0%, #0F1A3D 100%)',
-    features: ['Mobile Games', 'Branded Games', 'Hyper-Casual', 'Playable Ads'],
-    images: ['/services/games/game1.jpeg', '/services/games/game2.jpeg', '/services/games/game3.jpeg', '/services/games/game4.jpeg'],
-  },
-  {
-    title: 'Event Activation',
-    desc: 'Turn events into unforgettable interactive experiences.',
-    tag: 'Events',
-    gradient: 'linear-gradient(135deg, #3D1B69 0%, #251040 100%)',
-    features: ['VR Zones', 'AR Photo Booth', 'Installations', 'Brand Activations'],
-    images: ['/services/events/E3.jpg', '/services/events/E7.jpg', '/services/events/E8.jpg'],
-  },
-  {
-    title: 'Web & App Solutions',
-    desc: 'Full-stack development for modern, performant digital products.',
-    tag: 'Web',
-    gradient: 'linear-gradient(135deg, #1B4D69 0%, #0F2D3D 100%)',
-    features: ['Web Apps', 'Mobile Apps', 'E-commerce', 'UI/UX Design'],
-    icon: '🌐',
-  },
-  {
-    title: 'AI & Generative Solutions',
-    desc: 'AI-powered tools and generative experiences for next-gen campaigns.',
-    tag: 'AI',
-    gradient: 'linear-gradient(135deg, #4D1B69 0%, #2D1040 100%)',
-    features: ['Gen AI', 'AI Chatbots', 'AI Filters', 'Automation'],
-    icon: '🤖',
-  },
-  {
-    title: 'IoT Solutions',
-    desc: 'Connected devices and smart systems for the physical world.',
-    tag: 'IoT',
-    gradient: 'linear-gradient(135deg, #1B6955 0%, #0F3D30 100%)',
-    features: ['Smart Devices', 'Sensors', 'Monitoring', 'Prototyping'],
-    icon: '📡',
-  },
-]
+import ServiceIcon from '@/components/ServiceIcon'
 
 function Slideshow({ images }) {
   const [current, setCurrent] = useState(0)
@@ -139,6 +89,17 @@ function Slideshow({ images }) {
 }
 
 export default function HorizontalScrollServices() {
+  const [services, setServices] = useState([])
+
+  useEffect(() => {
+    fetch('/api/services')
+      .then(res => res.json())
+      .then(data => setServices(Array.isArray(data) ? data : []))
+      .catch(() => setServices([]))
+  }, [])
+
+  if (services.length === 0) return null
+
   return (
     <div style={{ padding: 'clamp(4rem, 8vw, 7rem) clamp(1.5rem, 5vw, 4rem)' }}>
       <div style={{ maxWidth: '1300px', margin: '0 auto', marginBottom: '2rem' }}>
@@ -158,7 +119,7 @@ export default function HorizontalScrollServices() {
       <div style={{ maxWidth: '1100px', margin: '0 auto' }}>
         {services.map((service, i) => (
           <div
-            key={i}
+            key={service.id}
             style={{
               position: 'sticky',
               top: `${80 + i * 20}px`,
@@ -198,7 +159,7 @@ export default function HorizontalScrollServices() {
                         backgroundImage: 'radial-gradient(circle at 25% 25%, white 1px, transparent 1px), radial-gradient(circle at 75% 75%, white 1px, transparent 1px)',
                         backgroundSize: '30px 30px',
                       }} />
-                      <span style={{ fontSize: '5rem', position: 'relative', zIndex: 1 }}>{service.icon}</span>
+                      <span style={{ position: 'relative', zIndex: 1 }}><ServiceIcon name={service.icon} size={64} color="rgba(255,255,255,0.85)" /></span>
                     </>
                   )}
                   <span style={{
@@ -239,10 +200,10 @@ export default function HorizontalScrollServices() {
                     fontSize: '0.92rem',
                     lineHeight: 1.7,
                     marginBottom: '1.5rem',
-                  }}>{service.desc}</p>
+                  }}>{service.description}</p>
 
                   <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
-                    {service.features.map((f, j) => (
+                    {(service.features || []).map((f, j) => (
                       <span key={j} style={{
                         padding: '0.3rem 0.7rem',
                         borderRadius: '6px',

@@ -1,5 +1,5 @@
 import { ScrollReveal } from '@/components/ScrollReveal'
-import { blogs } from '@/data'
+import { prisma } from '@/lib/prisma'
 
 export const metadata = {
   title: 'Blog',
@@ -14,7 +14,12 @@ export const metadata = {
   },
 }
 
-export default function Blog() {
+export default async function Blog() {
+  const blogs = await prisma.post.findMany({
+    where: { published: true },
+    orderBy: { createdAt: 'desc' },
+  })
+
   return (
     <main>
       <div className="page-header">
@@ -27,7 +32,7 @@ export default function Blog() {
 
       <section className="section" style={{ paddingTop: '1rem' }}>
         <div className="blog-grid">
-          {blogs.map((post, i) => (
+          {(blogs ?? []).map((post, i) => (
             <ScrollReveal key={post.id} direction="up" delay={i * 0.08}>
               <article className="blog-card">
                 <div className="blog-image">
@@ -43,7 +48,7 @@ export default function Blog() {
                     }}>
                       {post.category}
                     </span>
-                    {post.date}
+                    {new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
                   </div>
                   <h3>{post.title}</h3>
                   <p>{post.excerpt}</p>

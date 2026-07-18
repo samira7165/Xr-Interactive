@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import Image from 'next/image'
+import { LogIn } from 'lucide-react'
 
 const navItems = [
   { path: '/', label: 'Home' },
@@ -11,6 +12,7 @@ const navItems = [
   { path: '/services', label: 'Services' },
   { path: '/portfolio', label: 'Work' },
   { path: '/blog', label: 'Blog' },
+  { path: '/careers', label: 'Careers' },
 ]
 
 export default function Navbar() {
@@ -59,6 +61,21 @@ export default function Navbar() {
           ))}
         </div>
 
+        <Link
+          href="/admin/login"
+          aria-label="Sign in"
+          title="Sign in"
+          id="nav-signin-desktop"
+          style={{
+            display: 'none', alignItems: 'center', justifyContent: 'center',
+            width: '36px', height: '36px', borderRadius: '50%',
+            border: '1px solid var(--border)', color: 'var(--text-secondary)',
+            marginRight: '0.5rem', flexShrink: 0,
+          }}
+        >
+          <LogIn size={16} strokeWidth={2} />
+        </Link>
+
         <Link href="/contact" className="nav-cta" style={{
           padding: scrolled ? '0.45rem 1.2rem' : '0.6rem 1.5rem',
           fontSize: scrolled ? '0.8rem' : '0.85rem',
@@ -72,7 +89,12 @@ export default function Navbar() {
             transition: 'transform 0.3s',
           }}>→</span>
         </Link>
-        <style>{`@media(min-width:769px){#nav-cta-desktop{display:inline-flex!important}}`}</style>
+        <style>{`
+          @media(min-width:769px){
+            #nav-cta-desktop{display:inline-flex!important}
+            #nav-signin-desktop{display:flex!important}
+          }
+        `}</style>
 
         <button
           className={`hamburger ${menuOpen ? 'open' : ''}`}
@@ -89,6 +111,10 @@ export default function Navbar() {
         ))}
         <Link href="/contact" className="btn-primary" style={{ marginTop: '1rem' }}>
           Let&apos;s Talk
+        </Link>
+        <Link href="/admin/login" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', marginTop: '0.75rem' }}>
+          <LogIn size={16} strokeWidth={2} />
+          Sign In
         </Link>
       </div>
     </>

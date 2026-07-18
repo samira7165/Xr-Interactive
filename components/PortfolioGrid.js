@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import useInView from '@/components/useInView'
-import { portfolio } from '@/data'
 
 function FadeIn({ children, delay = 0 }) {
   const [ref, visible] = useInView()
@@ -15,9 +14,9 @@ function FadeIn({ children, delay = 0 }) {
 
 const categories = ['All', 'VR', 'AR', 'Event', 'Campaign']
 
-export default function PortfolioGrid() {
+export default function PortfolioGrid({ items }) {
   const [active, setActive] = useState('All')
-  const filtered = active === 'All' ? portfolio : portfolio.filter(p => p.category === active)
+  const filtered = active === 'All' ? items : items.filter(p => p.category === active)
 
   return (
     <>
@@ -38,7 +37,7 @@ export default function PortfolioGrid() {
           <FadeIn key={p.id} delay={i * 60}>
             <div className="portfolio-card">
               <div className="card-image">
-                <img src={p.image} alt={p.title} loading="lazy" />
+                <img src={p.thumbnail} alt={p.title} loading="lazy" />
                 <span className="card-category">{p.category}</span>
               </div>
               <div className="card-body">

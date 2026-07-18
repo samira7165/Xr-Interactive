@@ -1,4 +1,5 @@
 import PortfolioGrid from '@/components/PortfolioGrid'
+import { prisma } from '@/lib/prisma'
 
 export const metadata = {
   title: 'Portfolio',
@@ -13,7 +14,9 @@ export const metadata = {
   },
 }
 
-export default function Portfolio() {
+export default async function Portfolio() {
+  const items = await prisma.project.findMany({ orderBy: { createdAt: 'desc' } })
+
   return (
     <main>
       <div className="page-header">
@@ -23,7 +26,7 @@ export default function Portfolio() {
       </div>
 
       <section className="section" style={{ paddingTop: '1rem' }}>
-        <PortfolioGrid />
+        <PortfolioGrid items={items ?? []} />
       </section>
     </main>
   )

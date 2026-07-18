@@ -46,7 +46,8 @@ export default function ParallaxBackground() {
     window.addEventListener('resize', resize)
 
     const handleScroll = () => {
-      scrollRef.current = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+      const scrollable = document.body.scrollHeight - window.innerHeight
+      scrollRef.current = scrollable > 0 ? window.scrollY / scrollable : 0
     }
     window.addEventListener('scroll', handleScroll, { passive: true })
 

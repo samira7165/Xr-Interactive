@@ -41,3 +41,9 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+/lib/generated/prisma
+
+# uploaded images (dev-only local storage, see /api/upload)
+/public/uploads/*
+!/public/uploads/.gitkeep

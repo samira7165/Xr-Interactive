@@ -8,7 +8,8 @@ function useScrollProgress() {
   const [progress, setProgress] = useState(0)
   useEffect(() => {
     const handleScroll = () => {
-      const p = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+      const scrollable = document.body.scrollHeight - window.innerHeight
+      const p = scrollable > 0 ? window.scrollY / scrollable : 0
       setProgress(Math.min(Math.max(p, 0), 1))
     }
     window.addEventListener('scroll', handleScroll, { passive: true })

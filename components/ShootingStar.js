@@ -20,7 +20,8 @@ export default function ShootingStar() {
     window.addEventListener('resize', resize)
 
     const getStarPosition = () => {
-      const scrollProgress = window.scrollY / (document.body.scrollHeight - window.innerHeight)
+      const scrollable = document.body.scrollHeight - window.innerHeight
+      const scrollProgress = scrollable > 0 ? window.scrollY / scrollable : 0
       const t = Math.min(Math.max(scrollProgress, 0), 1)
 
       const w = canvas.width

@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import WordReveal from '@/components/WordReveal'
 import { ScrollReveal, Parallax } from '@/components/ScrollReveal'
-import { team } from '@/data'
+import { prisma } from '@/lib/prisma'
 
 export const metadata = {
   title: 'About Us',
@@ -24,7 +24,9 @@ const values = [
   {  title: 'Impact Driven', desc: 'We build solutions that create real impact — memorable experiences that engage audiences and drive measurable outcomes.' },
 ]
 
-export default function About() {
+export default async function About() {
+  const team = await prisma.teamMember.findMany({ orderBy: { order: 'asc' } })
+
   return (
     <main>
       <div className="page-header">
@@ -100,9 +102,15 @@ export default function About() {
         </ScrollReveal>
         <div className="team-grid">
           {team.map((t, i) => (
-            <ScrollReveal key={i} direction="up" delay={i * 0.08}>
+            <ScrollReveal key={t.id} direction="up" delay={i * 0.08}>
               <div className="team-card">
-                <div className="team-avatar">{t.initials}</div>
+                {t.image ? (
+                  <div className="team-avatar" style={{ overflow: 'hidden', padding: 0 }}>
+                    <img src={t.image} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  </div>
+                ) : (
+                  <div className="team-avatar">{t.name?.[0]?.toUpperCase()}</div>
+                )}
                 <h3>{t.name}</h3>
                 <p>{t.role}</p>
               </div>
