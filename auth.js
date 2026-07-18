@@ -21,7 +21,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, user.passwordHash)
         if (!valid) return null
 
-        return { id: String(user.id), email: user.email, name: user.name }
+        return { id: String(user.id), email: user.email, name: user.name, role: user.role }
       },
     }),
   ],
@@ -29,11 +29,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   pages: { signIn: '/admin/login' },
   callbacks: {
     jwt({ token, user }) {
-      if (user) token.id = user.id
+      if (user) {
+        token.id = user.id
+        token.role = user.role
+      }
       return token
     },
     session({ session, token }) {
       session.user.id = token.id
+      session.user.role = token.role
       return session
     },
   },

@@ -1,12 +1,18 @@
 'use server'
 
 import bcrypt from 'bcryptjs'
-import { AuthError } from 'next-auth'
-import { signIn } from '@/auth'
+import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { SignupSchema } from '@/lib/validation'
 
 export async function signup(prevState, formData) {
+  // proxy.js already gates this route, but every mutating action re-checks
+  // independently — route refactors can silently drop proxy coverage.
+  const session = await auth()
+  if (!session || session.user?.role !== 'SUPER_ADMIN') {
+    return { error: 'Only a super admin can create new admin accounts.' }
+  }
+
   const validated = SignupSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),
@@ -25,14 +31,7 @@ export async function signup(prevState, formData) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
-  await prisma.adminUser.create({ data: { email, passwordHash, name: name || null } })
+  await prisma.adminUser.create({ data: { email, passwordHash, name: name || null, role: 'ADMIN' } })
 
-  try {
-    await signIn('credentials', { email, password, redirectTo: '/admin' })
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { error: 'Account created, but sign-in failed. Try logging in.' }
-    }
-    throw error
-  }
+  return { success: true }
 }

@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { LayoutDashboard, Mail, FileText, Briefcase, Sparkles, Users, GraduationCap, FileUser, Menu, X } from 'lucide-react'
@@ -30,8 +31,9 @@ export default function Sidebar({ userLabel, userImage }) {
   return (
     <div className="admin-sidebar-root">
       <div className="admin-mobile-topbar">
-        <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>
-          XR<span style={{ color: 'var(--accent)' }}>I</span> Admin
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <Image src="/logo.png" alt="XRI" width={28} height={28} style={{ objectFit: 'contain' }} priority />
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>Admin</span>
         </span>
         <button
           type="button"
@@ -53,10 +55,9 @@ export default function Sidebar({ userLabel, userImage }) {
         background: 'var(--bg-secondary)', borderRight: '1px solid var(--border)',
         display: 'flex', flexDirection: 'column', padding: '1.5rem 1rem',
       }}>
-        <div style={{ padding: '0 0.5rem', marginBottom: '1.5rem' }} className="admin-sidebar-brand">
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>
-            XR<span style={{ color: 'var(--accent)' }}>I</span> Admin
-          </span>
+        <div style={{ padding: '0 0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }} className="admin-sidebar-brand">
+          <Image src="/logo.png" alt="XRI" width={32} height={32} style={{ objectFit: 'contain' }} priority />
+          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>Admin</span>
         </div>
 
         <Link

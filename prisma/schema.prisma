@@ -111,6 +111,11 @@ model JobApplication {
   createdAt DateTime @default(now())
 }
 
+enum Role {
+  SUPER_ADMIN
+  ADMIN
+}
+
 // Backs the admin dashboard login (Auth.js Credentials provider) — not in the
 // original spec either, but required for the admin CRUD screens to stay protected.
 model AdminUser {
@@ -119,6 +124,7 @@ model AdminUser {
   passwordHash String
   name         String?
   image        String?
+  role         Role     @default(ADMIN)
   createdAt    DateTime @default(now())
 }
 
