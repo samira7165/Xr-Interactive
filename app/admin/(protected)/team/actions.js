@@ -24,7 +24,7 @@ function parseForm(formData) {
   return { success: true, data: { ...rest, socialLinks } }
 }
 
-export async function createEmployee(prevState, formData) {
+export async function createTeamMember(prevState, formData) {
   const session = await auth()
   if (!session) return { errors: {}, message: 'Unauthorized' }
 
@@ -38,11 +38,11 @@ export async function createEmployee(prevState, formData) {
   }
 
   revalidatePath('/about')
-  revalidatePath('/admin/employees')
-  redirect('/admin/employees')
+  revalidatePath('/admin/team')
+  redirect('/admin/team')
 }
 
-export async function updateEmployee(id, prevState, formData) {
+export async function updateTeamMember(id, prevState, formData) {
   const session = await auth()
   if (!session) return { errors: {}, message: 'Unauthorized' }
 
@@ -56,15 +56,15 @@ export async function updateEmployee(id, prevState, formData) {
   }
 
   revalidatePath('/about')
-  revalidatePath('/admin/employees')
-  redirect('/admin/employees')
+  revalidatePath('/admin/team')
+  redirect('/admin/team')
 }
 
-export async function deleteEmployee(id) {
+export async function deleteTeamMember(id) {
   const session = await auth()
   if (!session) return { error: 'Unauthorized' }
 
   await prisma.teamMember.delete({ where: { id } })
   revalidatePath('/about')
-  revalidatePath('/admin/employees')
+  revalidatePath('/admin/team')
 }

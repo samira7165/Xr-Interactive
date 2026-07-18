@@ -3,7 +3,7 @@
 import { useActionState } from 'react'
 import ImageUploader from '../ImageUploader'
 
-export default function EmployeeForm({ action, initialData }) {
+export default function TeamMemberForm({ action, initialData }) {
   const [state, formAction, pending] = useActionState(action, { errors: {} })
   const socialLinks = initialData?.socialLinks || {}
 

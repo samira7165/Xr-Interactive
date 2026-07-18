@@ -4,7 +4,7 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 
 async function getCounts() {
-  const [projects, services, clients, messages, employees, jobs, applications] = await Promise.all([
+  const [projects, services, clients, messages, teamMembers, jobs, applications] = await Promise.all([
     prisma.project.count(),
     prisma.service.count(),
     prisma.client.count(),
@@ -13,7 +13,7 @@ async function getCounts() {
     prisma.job.count({ where: { active: true } }),
     prisma.jobApplication.count(),
   ])
-  return { projects, services, clients, messages, employees, jobs, applications }
+  return { projects, services, clients, messages, teamMembers, jobs, applications }
 }
 
 function isFreshlyCreated(item) {
@@ -67,7 +67,7 @@ export default async function AdminDashboard() {
     { label: 'Services', value: counts.services, icon: Sparkles, color: '#60A5FA', href: '/admin/services' },
     { label: 'Clients', value: counts.clients, icon: Building2, color: '#34D399', href: null },
     { label: 'Messages', value: counts.messages, icon: Mail, color: '#F472B6', href: '/admin/contacts' },
-    { label: 'Employees', value: counts.employees, icon: Users, color: '#FBBF24', href: '/admin/employees' },
+    { label: 'Team Members', value: counts.teamMembers, icon: Users, color: '#FBBF24', href: '/admin/team' },
     { label: 'Open Jobs', value: counts.jobs, icon: GraduationCap, color: '#818CF8', href: '/admin/careers' },
     { label: 'Applications', value: counts.applications, icon: FileUser, color: '#FB923C', href: '/admin/applications' },
   ]

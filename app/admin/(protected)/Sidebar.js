@@ -12,7 +12,7 @@ const navItems = [
   { href: '/admin/blog', label: 'Blog', icon: FileText },
   { href: '/admin/portfolio', label: 'Portfolio', icon: Briefcase },
   { href: '/admin/services', label: 'Services', icon: Sparkles },
-  { href: '/admin/employees', label: 'Employees', icon: Users },
+  { href: '/admin/team', label: 'Team Members', icon: Users },
   { href: '/admin/careers', label: 'Careers', icon: GraduationCap },
   { href: '/admin/applications', label: 'Applications', icon: FileUser },
 ]
