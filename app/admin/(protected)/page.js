@@ -136,25 +136,35 @@ function DeltaBadge({ deltaPct }) {
 
 const BREAKDOWN_COLORS = ['#3987e5', '#008300', '#d55181', '#c98500', '#199e70']
 
+async function timed(label, promise) {
+  const start = Date.now()
+  const result = await promise
+  console.log(`[dashboard-timing] ${label}: ${Date.now() - start}ms`)
+  return result
+}
+
 export default async function AdminDashboard() {
+  const pageStart = Date.now()
   const session = await auth()
   const greetingName = session?.user?.name || session?.user?.email?.split('@')[0] || 'there'
+  console.log(`[dashboard-timing] auth: ${Date.now() - pageStart}ms`)
 
   const [
     pageViews, applications, projects, messages, teamMembers,
     topPages, { events, recentProjects }, postCount, jobCount, serviceCount,
   ] = await Promise.all([
-    getMetric(prisma.pageView),
-    getMetric(prisma.jobApplication),
-    getMetric(prisma.project),
-    getMetric(prisma.contact),
-    getMetric(prisma.teamMember),
-    getTopPages(),
-    getRecentActivity(),
-    prisma.post.count(),
-    prisma.job.count(),
-    prisma.service.count(),
+    timed('metric:pageViews', getMetric(prisma.pageView)),
+    timed('metric:applications', getMetric(prisma.jobApplication)),
+    timed('metric:projects', getMetric(prisma.project)),
+    timed('metric:messages', getMetric(prisma.contact)),
+    timed('metric:teamMembers', getMetric(prisma.teamMember)),
+    timed('topPages', getTopPages()),
+    timed('recentActivity', getRecentActivity()),
+    timed('count:posts', prisma.post.count()),
+    timed('count:jobs', prisma.job.count()),
+    timed('count:services', prisma.service.count()),
   ])
+  console.log(`[dashboard-timing] total: ${Date.now() - pageStart}ms`)
 
   const cards = [
     { label: 'Site Visits', metric: pageViews, icon: Eye, href: null },
