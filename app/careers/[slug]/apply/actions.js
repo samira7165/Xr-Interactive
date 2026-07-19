@@ -2,6 +2,7 @@
 
 import { prisma } from '@/lib/prisma'
 import { ApplicationSchema } from '@/lib/validation'
+import { sendApplicationNotification } from '@/lib/email'
 
 export async function submitApplication(jobId, prevState, formData) {
   const validated = ApplicationSchema.safeParse({
@@ -18,13 +19,17 @@ export async function submitApplication(jobId, prevState, formData) {
 
   const { linkedin, ...rest } = validated.data
 
+  let application
   try {
-    await prisma.jobApplication.create({
+    application = await prisma.jobApplication.create({
       data: { ...rest, linkedin: linkedin || null, jobId },
+      include: { job: { select: { title: true } } },
     })
   } catch (error) {
     return { errors: {}, success: false, message: 'Something went wrong. Please try again.' }
   }
+
+  await sendApplicationNotification(application, application.job?.title || 'a job')
 
   return { errors: {}, success: true }
 }
