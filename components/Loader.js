@@ -10,20 +10,26 @@ export default function Loader({ onComplete }) {
   const [started, setStarted] = useState(false)
 
   useEffect(() => {
-    const t = setTimeout(() => setStarted(true), 100)
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      setVisible(false)
+      onComplete()
+      return
+    }
+
+    const t = setTimeout(() => setStarted(true), 50)
     return () => clearTimeout(t)
-  }, [])
+  }, [onComplete])
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress(prev => {
-        const next = prev + Math.random() * 4 + 1.5
+        const next = prev + Math.random() * 14 + 8
         if (next >= 100) {
           clearInterval(interval)
           setTimeout(() => {
             setVisible(false)
-            setTimeout(() => onComplete(), 600)
-          }, 500)
+            setTimeout(() => onComplete(), 250)
+          }, 100)
           return 100
         }
         return next
@@ -45,7 +51,7 @@ export default function Loader({ onComplete }) {
       alignItems: 'center',
       justifyContent: 'center',
       opacity: visible ? 1 : 0,
-      transition: 'opacity 0.6s ease',
+      transition: 'opacity 0.25s ease',
       pointerEvents: visible ? 'auto' : 'none',
       overflow: 'hidden',
     }}>

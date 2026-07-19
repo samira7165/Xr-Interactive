@@ -52,7 +52,7 @@ export default function ClientLayout({ children }) {
     <>
       {loading && <Loader onComplete={handleLoaded} />}
       {!prefersReducedMotion && pathname === '/' && (
-        <Suspense fallback={null}>
+        <Suspense fallback={<div style={{ position: 'fixed', inset: 0, zIndex: -1, pointerEvents: 'none', background: 'radial-gradient(ellipse 80% 60% at 50% 40%, rgba(113,82,156,0.15) 0%, transparent 70%)' }} />}>
           <ParticleBackground />
         </Suspense>
       )}

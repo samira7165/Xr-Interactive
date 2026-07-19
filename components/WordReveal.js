@@ -1,9 +1,11 @@
 'use client'
 import { useRef, useEffect, useState } from 'react'
+import usePrefersReducedMotion from './usePrefersReducedMotion'
 
 export default function WordReveal({ children, className = '', delay = 0 }) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const el = ref.current
@@ -24,15 +26,19 @@ export default function WordReveal({ children, className = '', delay = 0 }) {
   const text = typeof children === 'string' ? children : ''
   const words = text.split(' ')
 
+  if (prefersReducedMotion) {
+    return <div ref={ref} className={className}>{children}</div>
+  }
+
   if (!text) {
     return (
       <div
         ref={ref}
         className={className}
         style={{
-          opacity: visible ? 1 : 0,
+          opacity: visible ? 1 : 0.3,
           transform: visible ? 'translateY(0)' : 'translateY(20px)',
-          transition: `all 0.6s ease ${delay}s`,
+          transition: `all 0.3s ease ${delay}s`,
         }}
       >
         {children}
@@ -47,9 +53,9 @@ export default function WordReveal({ children, className = '', delay = 0 }) {
           key={i}
           style={{
             display: 'inline-block',
-            opacity: visible ? 1 : 0,
+            opacity: visible ? 1 : 0.3,
             transform: visible ? 'translateY(0)' : 'translateY(20px)',
-            transition: `all 0.4s ease ${delay + i * 0.06}s`,
+            transition: `all 0.3s ease ${delay + i * 0.06}s`,
             marginRight: '0.3em',
           }}
         >

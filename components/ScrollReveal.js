@@ -1,9 +1,11 @@
 'use client'
 import { useRef, useEffect, useState } from 'react'
+import usePrefersReducedMotion from './usePrefersReducedMotion'
 
 export function ScrollReveal({ children, direction = 'up', delay = 0, className = '' }) {
   const ref = useRef(null)
   const [visible, setVisible] = useState(false)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     const el = ref.current
@@ -26,14 +28,18 @@ export function ScrollReveal({ children, direction = 'up', delay = 0, className 
     scale: 'scale(0.9)',
   }
 
+  if (prefersReducedMotion) {
+    return <div ref={ref} className={className}>{children}</div>
+  }
+
   return (
     <div
       ref={ref}
       className={className}
       style={{
-        opacity: visible ? 1 : 0,
+        opacity: visible ? 1 : 0.3,
         transform: visible ? 'none' : transforms[direction],
-        transition: `opacity 0.8s ease ${delay}s, transform 0.8s ease ${delay}s`,
+        transition: `opacity 0.3s ease ${delay}s, transform 0.3s ease ${delay}s`,
       }}
     >
       {children}
