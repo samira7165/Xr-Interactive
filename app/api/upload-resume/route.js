@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
-import { writeFile, mkdir } from 'fs/promises'
+import { put } from '@vercel/blob'
 import path from 'path'
 
 // Deliberately public/unauthenticated — job applicants aren't logged in. Unlike
 // /api/upload (admin-only, images), this accepts resume documents from anyone.
-// No rate limiting: acceptable for a local-dev-only setup, but worth adding if
-// this ever moves to a publicly reachable deployment.
+// No rate limiting: acceptable for now, but worth adding if abuse shows up.
 
 const ALLOWED_TYPES = [
   'application/pdf',
@@ -32,12 +31,11 @@ export async function POST(request) {
 
   const ext = path.extname(file.name) || '.pdf'
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
-  const uploadsDir = path.join(process.cwd(), 'public', 'uploads', 'resumes')
 
-  await mkdir(uploadsDir, { recursive: true })
+  const blob = await put(`uploads/resumes/${filename}`, file, {
+    access: 'public',
+    contentType: file.type,
+  })
 
-  const bytes = Buffer.from(await file.arrayBuffer())
-  await writeFile(path.join(uploadsDir, filename), bytes)
-
-  return NextResponse.json({ url: `/uploads/resumes/${filename}`, name: file.name })
+  return NextResponse.json({ url: blob.url, name: file.name })
 }
