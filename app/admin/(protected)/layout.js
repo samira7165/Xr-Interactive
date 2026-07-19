@@ -4,6 +4,11 @@ import { auth, signOut } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import Sidebar from './Sidebar'
 
+// Every page under here depends on the current user's session — it must never
+// be cached/prerendered, or one user's (or an anonymous build-time) response
+// can get served to everyone else.
+export const dynamic = 'force-dynamic'
+
 export default async function ProtectedAdminLayout({ children }) {
   const session = await auth()
   if (!session || !session.user?.id) redirect('/admin/login')
