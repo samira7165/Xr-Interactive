@@ -37,6 +37,7 @@ export async function createItem(prevState, formData) {
     return { errors: {}, message: error.message }
   }
 
+  revalidatePath('/')
   revalidatePath('/portfolio')
   revalidatePath('/admin/portfolio')
   redirect('/admin/portfolio')
@@ -55,6 +56,7 @@ export async function updateItem(id, prevState, formData) {
     return { errors: {}, message: error.message }
   }
 
+  revalidatePath('/')
   revalidatePath('/portfolio')
   revalidatePath('/admin/portfolio')
   redirect('/admin/portfolio')
@@ -65,6 +67,7 @@ export async function deleteItem(id) {
   if (!session) return { error: 'Unauthorized' }
 
   await prisma.project.delete({ where: { id } })
+  revalidatePath('/')
   revalidatePath('/portfolio')
   revalidatePath('/admin/portfolio')
 }

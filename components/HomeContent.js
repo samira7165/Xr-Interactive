@@ -6,7 +6,7 @@ import AnimatedCounter from '@/components/AnimatedCounter'
 import WordReveal from '@/components/WordReveal'
 import { ScrollReveal, Parallax } from '@/components/ScrollReveal'
 import MagneticButton from '@/components/MagneticButton'
-import { services, portfolio, stats } from '@/data'
+import { stats } from '@/data'
 import HorizontalScrollServices from '@/components/HorizontalScrollServices'
 
 function useTypewriter(words, typingSpeed = 100, deletingSpeed = 60, pauseTime = 2000) {
@@ -36,7 +36,7 @@ function useTypewriter(words, typingSpeed = 100, deletingSpeed = 60, pauseTime =
   return text
 }
 
-export default function HomeContent() {
+export default function HomeContent({ projects = [] }) {
   const typedText = useTypewriter(['3D Experiences', 'Virtual Worlds', 'AR Filters', 'Digital Magic'])
 
   return (
@@ -234,11 +234,11 @@ export default function HomeContent() {
           <ScrollReveal direction="right" delay={0.2}><WordReveal className="section-subtitle" delay={0.2}>{"A glimpse into the immersive experiences we have created for brands and events."}</WordReveal></ScrollReveal>
         </Parallax>
         <div className="portfolio-grid">
-          {portfolio.slice(0, 6).map((p, i) => (
+          {projects.map((p, i) => (
             <ScrollReveal key={p.id} direction={i % 2 === 0 ? 'left' : 'right'} delay={i * 0.08}>
               <div className="portfolio-card">
                 <div className="card-image">
-                  <Parallax speed={0.15}><img src={p.image} alt={p.title} loading="lazy" /></Parallax>
+                  <Parallax speed={0.15}><img src={p.thumbnail} alt={p.title} loading="lazy" /></Parallax>
                   <span className="card-category">{p.category}</span>
                 </div>
                 <div className="card-body"><h3>{p.title}</h3><p>{p.description}</p></div>
