@@ -1,6 +1,8 @@
 import TeamMemberForm from '../TeamMemberForm'
 import { createTeamMember } from '../actions'
 
+export const dynamic = 'force-dynamic'
+
 export default function NewTeamMemberPage() {
   return (
     <div>

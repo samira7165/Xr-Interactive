@@ -1,11 +1,17 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useActionState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import ImageUploader from '../ImageUploader'
 
 export default function TeamMemberForm({ action, initialData }) {
   const [state, formAction, pending] = useActionState(action, { errors: {} })
+  const router = useRouter()
   const socialLinks = initialData?.socialLinks || {}
+
+  useEffect(() => {
+    if (state.success) router.push('/admin/team')
+  }, [state.success, router])
 
   return (
     <form action={formAction} className="admin-card" style={{ maxWidth: '640px' }}>

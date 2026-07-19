@@ -1,7 +1,6 @@
 'use server'
 
 import { revalidatePath } from 'next/cache'
-import { redirect } from 'next/navigation'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import { TeamMemberSchema } from '@/lib/validation'
@@ -39,7 +38,7 @@ export async function createTeamMember(prevState, formData) {
 
   revalidatePath('/about')
   revalidatePath('/admin/team')
-  redirect('/admin/team')
+  return { errors: {}, success: true }
 }
 
 export async function updateTeamMember(id, prevState, formData) {
@@ -57,7 +56,7 @@ export async function updateTeamMember(id, prevState, formData) {
 
   revalidatePath('/about')
   revalidatePath('/admin/team')
-  redirect('/admin/team')
+  return { errors: {}, success: true }
 }
 
 export async function deleteTeamMember(id) {
