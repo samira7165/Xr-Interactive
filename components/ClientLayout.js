@@ -9,12 +9,14 @@ import Navbar from './Navbar'
 import Footer from './Footer'
 import ScrollToTop from './ScrollToTop'
 import ShootingStar from './ShootingStar'
+import usePrefersReducedMotion from './usePrefersReducedMotion'
 
 const ParticleBackground = dynamic(() => import('./ParticleBackground'), { ssr: false })
 
 export default function ClientLayout({ children }) {
   const pathname = usePathname()
   const [loading, setLoading] = useState(true)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   const handleLoaded = useCallback(() => {
     setLoading(false)
@@ -49,10 +51,12 @@ export default function ClientLayout({ children }) {
   return (
     <>
       {loading && <Loader onComplete={handleLoaded} />}
-      <Suspense fallback={null}>
-        <ParticleBackground />
-      </Suspense>
-      <ShootingStar />
+      {!prefersReducedMotion && pathname === '/' && (
+        <Suspense fallback={null}>
+          <ParticleBackground />
+        </Suspense>
+      )}
+      {!prefersReducedMotion && <ShootingStar />}
       <ScrollToTop />
       <Navbar />
       <div style={{ position: 'relative', zIndex: 1 }}>
