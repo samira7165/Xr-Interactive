@@ -4,16 +4,36 @@ import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 
 async function getCounts() {
-  const [projects, services, clients, messages, teamMembers, jobs, applications] = await Promise.all([
-    prisma.project.count(),
-    prisma.service.count(),
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const since = { createdAt: { gte: sevenDaysAgo } }
+
+  const [
+    projects, projectsNew,
+    services, servicesNew,
+    clients,
+    messages, messagesNew,
+    teamMembers, teamMembersNew,
+    jobs, jobsNew,
+    applications, applicationsNew,
+  ] = await Promise.all([
+    prisma.project.count(), prisma.project.count({ where: since }),
+    prisma.service.count(), prisma.service.count({ where: since }),
     prisma.client.count(),
-    prisma.contact.count(),
-    prisma.teamMember.count(),
-    prisma.job.count({ where: { active: true } }),
-    prisma.jobApplication.count(),
+    prisma.contact.count(), prisma.contact.count({ where: since }),
+    prisma.teamMember.count(), prisma.teamMember.count({ where: since }),
+    prisma.job.count({ where: { active: true } }), prisma.job.count({ where: { ...since, active: true } }),
+    prisma.jobApplication.count(), prisma.jobApplication.count({ where: since }),
   ])
-  return { projects, services, clients, messages, teamMembers, jobs, applications }
+
+  return {
+    projects, projectsNew,
+    services, servicesNew,
+    clients,
+    messages, messagesNew,
+    teamMembers, teamMembersNew,
+    jobs, jobsNew,
+    applications, applicationsNew,
+  }
 }
 
 function isFreshlyCreated(item) {
@@ -63,13 +83,13 @@ export default async function AdminDashboard() {
   const [counts, activity] = await Promise.all([getCounts(), getRecentActivity()])
 
   const cards = [
-    { label: 'Projects', value: counts.projects, icon: Briefcase, color: '#C084FC', href: '/admin/portfolio' },
-    { label: 'Services', value: counts.services, icon: Sparkles, color: '#60A5FA', href: '/admin/services' },
-    { label: 'Clients', value: counts.clients, icon: Building2, color: '#34D399', href: null },
-    { label: 'Messages', value: counts.messages, icon: Mail, color: '#F472B6', href: '/admin/contacts' },
-    { label: 'Team Members', value: counts.teamMembers, icon: Users, color: '#FBBF24', href: '/admin/team' },
-    { label: 'Open Jobs', value: counts.jobs, icon: GraduationCap, color: '#818CF8', href: '/admin/careers' },
-    { label: 'Applications', value: counts.applications, icon: FileUser, color: '#FB923C', href: '/admin/applications' },
+    { label: 'Projects', value: counts.projects, newCount: counts.projectsNew, icon: Briefcase, href: '/admin/portfolio' },
+    { label: 'Services', value: counts.services, newCount: counts.servicesNew, icon: Sparkles, href: '/admin/services' },
+    { label: 'Clients', value: counts.clients, newCount: 0, icon: Building2, href: null },
+    { label: 'Messages', value: counts.messages, newCount: counts.messagesNew, icon: Mail, href: '/admin/contacts' },
+    { label: 'Team Members', value: counts.teamMembers, newCount: counts.teamMembersNew, icon: Users, href: '/admin/team' },
+    { label: 'Open Jobs', value: counts.jobs, newCount: counts.jobsNew, icon: GraduationCap, href: '/admin/careers' },
+    { label: 'Applications', value: counts.applications, newCount: counts.applicationsNew, icon: FileUser, href: '/admin/applications' },
   ]
 
   return (
@@ -84,12 +104,19 @@ export default async function AdminDashboard() {
             <>
               <div style={{
                 width: '44px', height: '44px', borderRadius: '10px', flexShrink: 0,
-                background: `${card.color}1A`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                background: 'rgba(192,132,252,0.12)', display: 'flex', alignItems: 'center', justifyContent: 'center',
               }}>
-                <Icon size={20} color={card.color} strokeWidth={2} />
+                <Icon size={20} color="var(--accent)" strokeWidth={2} />
               </div>
               <div>
-                <div style={{ fontSize: '1.6rem', fontWeight: 700, fontFamily: 'var(--font-display)', lineHeight: 1.1 }}>{card.value}</div>
+                <div style={{ display: 'flex', alignItems: 'baseline', gap: '0.5rem' }}>
+                  <span style={{ fontSize: '1.6rem', fontWeight: 700, fontFamily: 'var(--font-display)', lineHeight: 1.1 }}>{card.value}</span>
+                  {card.newCount > 0 && (
+                    <span style={{ fontSize: '0.72rem', fontWeight: 600, color: '#34D399' }}>
+                      +{card.newCount}
+                    </span>
+                  )}
+                </div>
                 <div style={{ color: 'var(--text-secondary)', fontSize: '0.82rem', marginTop: '0.15rem' }}>{card.label}</div>
               </div>
             </>

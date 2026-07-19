@@ -50,7 +50,10 @@ export default async function ProtectedAdminLayout({ children }) {
         .admin-btn-ghost { background: transparent; }
         .admin-card {
           background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem;
-          transition: border-color 0.15s;
+          transition: border-color 0.15s, background 0.15s;
+        }
+        a.admin-card:hover {
+          border-color: var(--accent); background: var(--bg-card-hover);
         }
         .admin-table { width: 100%; border-collapse: collapse; }
         .admin-table th, .admin-table td {
