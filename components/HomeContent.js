@@ -1,6 +1,7 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { useState, useEffect } from 'react'
 import AnimatedCounter from '@/components/AnimatedCounter'
 import WordReveal from '@/components/WordReveal'
@@ -238,7 +239,18 @@ export default function HomeContent({ projects = [] }) {
             <ScrollReveal key={p.id} direction={i % 2 === 0 ? 'left' : 'right'} delay={i * 0.08}>
               <div className="portfolio-card">
                 <div className="card-image">
-                  <Parallax speed={0.15}><img src={p.thumbnail} alt={p.title} loading="lazy" /></Parallax>
+                  <Parallax speed={0.15}>
+                    <Image
+                      src={p.thumbnail}
+                      alt={p.title}
+                      width={400}
+                      height={220}
+                      quality={80}
+                      loading="lazy"
+                      sizes="(max-width: 640px) 100vw, 400px"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  </Parallax>
                   <span className="card-category">{p.category}</span>
                 </div>
                 <div className="card-body"><h3>{p.title}</h3><p>{p.description}</p></div>

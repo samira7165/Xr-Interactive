@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import WordReveal from '@/components/WordReveal'
 import { ScrollReveal, Parallax } from '@/components/ScrollReveal'
 import { prisma } from '@/lib/prisma'
@@ -62,9 +63,12 @@ export default async function About() {
           <ScrollReveal direction="right" delay={0.2}>
             <Parallax speed={-0.1}>
               <div className="about-image">
-                <img
-                  src="https://xri.com.bd/frontend/images/components/about-1.png"
+                <Image
+                  src="/gallery/about-1.png"
                   alt="XR Interactive team"
+                  width={1042}
+                  height={1043}
+                  quality={80}
                   style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
               </div>
@@ -106,7 +110,15 @@ export default async function About() {
               <div className="team-card">
                 {t.image ? (
                   <div className="team-avatar" style={{ overflow: 'hidden', padding: 0 }}>
-                    <img src={t.image} alt={t.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    <Image
+                      src={t.image}
+                      alt={t.name}
+                      width={140}
+                      height={140}
+                      quality={80}
+                      loading="lazy"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
                   </div>
                 ) : (
                   <div className="team-avatar">{t.name?.[0]?.toUpperCase()}</div>

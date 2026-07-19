@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { ScrollReveal } from '@/components/ScrollReveal'
@@ -66,7 +67,16 @@ export default async function JobDetail({ params }) {
         <section className="section" style={{ paddingTop: 0, paddingBottom: '1rem' }}>
           <div style={{ display: 'grid', gridTemplateColumns: job.images.length > 1 ? 'repeat(auto-fit, minmax(280px, 1fr))' : '1fr', gap: '1rem', maxWidth: '900px', margin: '0 auto' }}>
             {job.images.map((src, i) => (
-              <img key={i} src={src} alt="" style={{ width: '100%', borderRadius: '16px', objectFit: 'cover', maxHeight: '400px' }} />
+              <Image
+                key={i}
+                src={src}
+                alt=""
+                width={900}
+                height={400}
+                quality={80}
+                sizes="(max-width: 900px) 100vw, 900px"
+                style={{ width: '100%', height: 'auto', borderRadius: '16px', objectFit: 'cover', maxHeight: '400px' }}
+              />
             ))}
           </div>
         </section>

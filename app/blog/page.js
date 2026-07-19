@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { prisma } from '@/lib/prisma'
 
@@ -36,7 +37,16 @@ export default async function Blog() {
             <ScrollReveal key={post.id} direction="up" delay={i * 0.08}>
               <article className="blog-card">
                 <div className="blog-image">
-                  <img src={post.image} alt={post.title} loading="lazy" />
+                  <Image
+                    src={post.image}
+                    alt={post.title}
+                    width={400}
+                    height={200}
+                    quality={80}
+                    loading="lazy"
+                    sizes="(max-width: 640px) 100vw, 400px"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
                 </div>
                 <div className="blog-body">
                   <div className="blog-meta">
