@@ -34,7 +34,7 @@ model TeamMember {
   name        String
   role        String
   bio         String   @db.Text
-  image       String
+  image       String?
   socialLinks Json?
   order       Int      @default(0)
   createdAt   DateTime @default(now())

@@ -21,7 +21,7 @@ function parseForm(formData) {
   const { twitter, linkedin, ...rest } = validated.data
   const socialLinks = (twitter || linkedin) ? { twitter: twitter || undefined, linkedin: linkedin || undefined } : null
 
-  return { success: true, data: { ...rest, socialLinks } }
+  return { success: true, data: { ...rest, image: rest.image || null, socialLinks } }
 }
 
 export async function createTeamMember(prevState, formData) {
