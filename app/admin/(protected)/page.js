@@ -27,18 +27,55 @@ function bucketByDay(dates, days) {
   return Array.from(buckets.entries()).map(([date, count]) => ({ date, count }))
 }
 
-async function getMetric(model) {
+// Each round trip to the (remote) database costs real connection-setup latency, so
+// the 5 trend metrics' totals + the 3 extra content counts are fetched as a single
+// query, and their 60-day createdAt histories as one UNION ALL query, instead of
+// ~13 separate calls.
+async function getAllMetrics() {
   const sixtyDaysAgo = new Date(Date.now() - 60 * DAY_MS)
-  const [total, recentRows] = await Promise.all([
-    model.count(),
-    model.findMany({ where: { createdAt: { gte: sixtyDaysAgo } }, select: { createdAt: true } }),
-  ])
-  const days = bucketByDay(recentRows.map(r => r.createdAt), 60)
-  const last30 = days.slice(30).reduce((sum, d) => sum + d.count, 0)
-  const prev30 = days.slice(0, 30).reduce((sum, d) => sum + d.count, 0)
-  const deltaPct = prev30 > 0 ? Math.round(((last30 - prev30) / prev30) * 1000) / 10 : null
 
-  return { total, deltaPct, days }
+  const [totalsRows, historyRows] = await Promise.all([
+    prisma.$queryRaw`
+      SELECT
+        (SELECT COUNT(*) FROM \`PageView\`) AS pageViews,
+        (SELECT COUNT(*) FROM \`JobApplication\`) AS applications,
+        (SELECT COUNT(*) FROM \`Project\`) AS projects,
+        (SELECT COUNT(*) FROM \`Contact\`) AS messages,
+        (SELECT COUNT(*) FROM \`TeamMember\`) AS teamMembers,
+        (SELECT COUNT(*) FROM \`Post\`) AS posts,
+        (SELECT COUNT(*) FROM \`Job\`) AS jobs,
+        (SELECT COUNT(*) FROM \`Service\`) AS services
+    `,
+    prisma.$queryRaw`
+      SELECT 'pageViews' AS source, createdAt FROM \`PageView\` WHERE createdAt >= ${sixtyDaysAgo}
+      UNION ALL SELECT 'applications', createdAt FROM \`JobApplication\` WHERE createdAt >= ${sixtyDaysAgo}
+      UNION ALL SELECT 'projects', createdAt FROM \`Project\` WHERE createdAt >= ${sixtyDaysAgo}
+      UNION ALL SELECT 'messages', createdAt FROM \`Contact\` WHERE createdAt >= ${sixtyDaysAgo}
+      UNION ALL SELECT 'teamMembers', createdAt FROM \`TeamMember\` WHERE createdAt >= ${sixtyDaysAgo}
+    `,
+  ])
+
+  const totals = totalsRows[0]
+  const createdAtBySource = { pageViews: [], applications: [], projects: [], messages: [], teamMembers: [] }
+  for (const row of historyRows) {
+    createdAtBySource[row.source].push(row.createdAt)
+  }
+
+  const metrics = {}
+  for (const key of Object.keys(createdAtBySource)) {
+    const days = bucketByDay(createdAtBySource[key], 60)
+    const last30 = days.slice(30).reduce((sum, d) => sum + d.count, 0)
+    const prev30 = days.slice(0, 30).reduce((sum, d) => sum + d.count, 0)
+    const deltaPct = prev30 > 0 ? Math.round(((last30 - prev30) / prev30) * 1000) / 10 : null
+    metrics[key] = { total: Number(totals[key]), deltaPct, days }
+  }
+
+  return {
+    metrics,
+    postCount: Number(totals.posts),
+    jobCount: Number(totals.jobs),
+    serviceCount: Number(totals.services),
+  }
 }
 
 async function getTopPages() {
@@ -136,35 +173,19 @@ function DeltaBadge({ deltaPct }) {
 
 const BREAKDOWN_COLORS = ['#3987e5', '#008300', '#d55181', '#c98500', '#199e70']
 
-async function timed(label, promise) {
-  const start = Date.now()
-  const result = await promise
-  console.log(`[dashboard-timing] ${label}: ${Date.now() - start}ms`)
-  return result
-}
-
 export default async function AdminDashboard() {
-  const pageStart = Date.now()
   const session = await auth()
   const greetingName = session?.user?.name || session?.user?.email?.split('@')[0] || 'there'
-  console.log(`[dashboard-timing] auth: ${Date.now() - pageStart}ms`)
 
   const [
-    pageViews, applications, projects, messages, teamMembers,
-    topPages, { events, recentProjects }, postCount, jobCount, serviceCount,
+    { metrics, postCount, jobCount, serviceCount },
+    topPages, { events, recentProjects },
   ] = await Promise.all([
-    timed('metric:pageViews', getMetric(prisma.pageView)),
-    timed('metric:applications', getMetric(prisma.jobApplication)),
-    timed('metric:projects', getMetric(prisma.project)),
-    timed('metric:messages', getMetric(prisma.contact)),
-    timed('metric:teamMembers', getMetric(prisma.teamMember)),
-    timed('topPages', getTopPages()),
-    timed('recentActivity', getRecentActivity()),
-    timed('count:posts', prisma.post.count()),
-    timed('count:jobs', prisma.job.count()),
-    timed('count:services', prisma.service.count()),
+    getAllMetrics(),
+    getTopPages(),
+    getRecentActivity(),
   ])
-  console.log(`[dashboard-timing] total: ${Date.now() - pageStart}ms`)
+  const { pageViews, applications, projects, messages, teamMembers } = metrics
 
   const cards = [
     { label: 'Site Visits', metric: pageViews, icon: Eye, href: null },
