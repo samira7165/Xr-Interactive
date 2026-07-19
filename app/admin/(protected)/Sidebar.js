@@ -125,7 +125,7 @@ export default function Sidebar({ userLabel, userImage }) {
           display: none;
         }
         .admin-sidebar {
-          width: 240px; flex-shrink: 0; min-height: 100vh;
+          width: 240px; flex-shrink: 0; height: 100%; min-height: 100vh;
         }
 
         @media (max-width: 900px) {
