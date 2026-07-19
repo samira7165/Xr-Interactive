@@ -4,20 +4,35 @@ import { useState, useEffect } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { LayoutDashboard, Mail, FileText, Briefcase, Sparkles, Users, GraduationCap, FileUser, Menu, X } from 'lucide-react'
+import {
+  LayoutDashboard, Mail, FileText, Briefcase, Sparkles, Users, GraduationCap, FileUser,
+  Settings, Menu, X,
+} from 'lucide-react'
 
-const navItems = [
-  { href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true },
-  { href: '/admin/contacts', label: 'Contacts', icon: Mail },
-  { href: '/admin/blog', label: 'Blog', icon: FileText },
-  { href: '/admin/portfolio', label: 'Portfolio', icon: Briefcase },
-  { href: '/admin/services', label: 'Services', icon: Sparkles },
-  { href: '/admin/team', label: 'Team Members', icon: Users },
-  { href: '/admin/careers', label: 'Careers', icon: GraduationCap },
-  { href: '/admin/applications', label: 'Applications', icon: FileUser },
+const navGroups = [
+  { items: [{ href: '/admin', label: 'Dashboard', icon: LayoutDashboard, exact: true }] },
+  {
+    label: 'Management',
+    items: [
+      { href: '/admin/contacts', label: 'Contacts', icon: Mail, badgeKey: 'contacts' },
+      { href: '/admin/portfolio', label: 'Portfolio', icon: Briefcase },
+      { href: '/admin/services', label: 'Services', icon: Sparkles },
+      { href: '/admin/team', label: 'Team Members', icon: Users },
+      { href: '/admin/careers', label: 'Careers', icon: GraduationCap },
+      { href: '/admin/applications', label: 'Applications', icon: FileUser },
+    ],
+  },
+  {
+    label: 'Content',
+    items: [{ href: '/admin/blog', label: 'Blog', icon: FileText }],
+  },
+  {
+    label: 'System',
+    items: [{ href: '/admin/settings', label: 'Settings', icon: Settings }],
+  },
 ]
 
-export default function Sidebar({ userLabel, userImage }) {
+export default function Sidebar({ userLabel, userImage, badges = {} }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
 
@@ -60,11 +75,57 @@ export default function Sidebar({ userLabel, userImage }) {
           <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>Admin</span>
         </div>
 
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto' }}>
+          {navGroups.map((group, gi) => (
+            <div key={gi} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
+              {group.label && (
+                <div style={{
+                  fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
+                  color: 'var(--text-muted)', padding: '0 0.75rem', marginBottom: '0.15rem',
+                }}>
+                  {group.label}
+                </div>
+              )}
+              {group.items.map(item => {
+                const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
+                const Icon = item.icon
+                const badge = item.badgeKey ? badges[item.badgeKey] : null
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    style={{
+                      display: 'flex', alignItems: 'center', gap: '0.7rem',
+                      padding: '0.6rem 0.75rem', borderRadius: '8px',
+                      fontSize: '0.9rem', fontWeight: isActive ? 600 : 500,
+                      color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                      background: isActive ? 'var(--bg-card-hover)' : 'transparent',
+                      borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
+                      transition: 'background 0.15s, color 0.15s',
+                    }}
+                  >
+                    <Icon size={17} strokeWidth={2} />
+                    <span style={{ flex: 1 }}>{item.label}</span>
+                    {badge > 0 && (
+                      <span style={{
+                        fontSize: '0.72rem', fontWeight: 700, color: '#fff', background: 'var(--accent)',
+                        borderRadius: '999px', padding: '0.05rem 0.45rem', lineHeight: 1.5,
+                      }}>
+                        {badge}
+                      </span>
+                    )}
+                  </Link>
+                )
+              })}
+            </div>
+          ))}
+        </nav>
+
         <Link
           href="/admin/settings"
           style={{
             display: 'flex', alignItems: 'center', gap: '0.7rem', padding: '0.6rem 0.5rem',
-            borderRadius: '10px', textDecoration: 'none', marginBottom: '1.5rem',
+            borderRadius: '10px', textDecoration: 'none', marginTop: '1rem',
             background: pathname === '/admin/settings' ? 'var(--bg-card-hover)' : 'var(--bg-card)',
             border: '1px solid var(--border)',
           }}
@@ -91,31 +152,6 @@ export default function Sidebar({ userLabel, userImage }) {
             <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>View profile</div>
           </div>
         </Link>
-
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1, overflowY: 'auto' }}>
-          {navItems.map(item => {
-            const isActive = item.exact ? pathname === item.href : pathname.startsWith(item.href)
-            const Icon = item.icon
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '0.7rem',
-                  padding: '0.6rem 0.75rem', borderRadius: '8px',
-                  fontSize: '0.9rem', fontWeight: isActive ? 600 : 500,
-                  color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
-                  background: isActive ? 'var(--bg-card-hover)' : 'transparent',
-                  borderLeft: isActive ? '2px solid var(--accent)' : '2px solid transparent',
-                  transition: 'background 0.15s, color 0.15s',
-                }}
-              >
-                <Icon size={17} strokeWidth={2} />
-                {item.label}
-              </Link>
-            )
-          })}
-        </nav>
       </aside>
 
       <style>{`

@@ -8,9 +8,11 @@ export default async function ProtectedAdminLayout({ children }) {
   const session = await auth()
   if (!session || !session.user?.id) redirect('/admin/login')
 
-  const [currentUser, visitCount] = await Promise.all([
+  const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+  const [currentUser, visitCount, newContacts] = await Promise.all([
     prisma.adminUser.findUnique({ where: { id: Number(session.user.id) } }),
     prisma.pageView.count(),
+    prisma.contact.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
   ])
 
   const userLabel = currentUser?.name || session.user?.email
@@ -18,7 +20,7 @@ export default async function ProtectedAdminLayout({ children }) {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap' }} className="admin-shell">
-      <Sidebar userLabel={userLabel} userImage={userImage} />
+      <Sidebar userLabel={userLabel} userImage={userImage} badges={{ contacts: newContacts }} />
       <div style={{ flex: 1, minWidth: 0 }} className="admin-content">
         <header className="admin-header" style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center',
