@@ -1,7 +1,6 @@
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import TeamMemberForm from '../../TeamMemberForm'
-import { updateTeamMember } from '../../actions'
 
 export default async function EditTeamMemberPage({ params }) {
   const { id } = await params
@@ -12,7 +11,7 @@ export default async function EditTeamMemberPage({ params }) {
   return (
     <div>
       <h1 style={{ fontFamily: 'var(--font-display)', marginBottom: '1.5rem' }}>Edit Team Member</h1>
-      <TeamMemberForm action={updateTeamMember.bind(null, member.id)} initialData={member} />
+      <TeamMemberForm memberId={member.id} initialData={member} />
     </div>
   )
 }
