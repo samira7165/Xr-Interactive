@@ -61,13 +61,19 @@ function isFreshlyCreated(item) {
 
 async function getRecentActivity() {
   const [contacts, projects, posts, team, services, jobs, applications] = await Promise.all([
-    prisma.contact.findMany({ orderBy: { createdAt: 'desc' }, take: 5 }),
-    prisma.project.findMany({ orderBy: { updatedAt: 'desc' }, take: 5 }),
-    prisma.post.findMany({ orderBy: { updatedAt: 'desc' }, take: 5 }),
-    prisma.teamMember.findMany({ orderBy: { updatedAt: 'desc' }, take: 5 }),
-    prisma.service.findMany({ orderBy: { updatedAt: 'desc' }, take: 5 }),
-    prisma.job.findMany({ orderBy: { updatedAt: 'desc' }, take: 5 }),
-    prisma.jobApplication.findMany({ orderBy: { createdAt: 'desc' }, take: 5, include: { job: { select: { title: true } } } }),
+    prisma.contact.findMany({ orderBy: { createdAt: 'desc' }, take: 5, select: { name: true, createdAt: true } }),
+    prisma.project.findMany({
+      orderBy: { updatedAt: 'desc' }, take: 5,
+      select: { id: true, title: true, category: true, thumbnail: true, createdAt: true, updatedAt: true },
+    }),
+    prisma.post.findMany({ orderBy: { updatedAt: 'desc' }, take: 5, select: { title: true, createdAt: true, updatedAt: true } }),
+    prisma.teamMember.findMany({ orderBy: { updatedAt: 'desc' }, take: 5, select: { name: true, createdAt: true, updatedAt: true } }),
+    prisma.service.findMany({ orderBy: { updatedAt: 'desc' }, take: 5, select: { title: true, createdAt: true, updatedAt: true } }),
+    prisma.job.findMany({ orderBy: { updatedAt: 'desc' }, take: 5, select: { title: true, createdAt: true, updatedAt: true } }),
+    prisma.jobApplication.findMany({
+      orderBy: { createdAt: 'desc' }, take: 5,
+      select: { name: true, createdAt: true, job: { select: { title: true } } },
+    }),
   ])
 
   const events = [
