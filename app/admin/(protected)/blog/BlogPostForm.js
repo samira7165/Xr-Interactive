@@ -1,27 +1,52 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import ImageUploader from '../ImageUploader'
 
-export default function BlogPostForm({ action, initialData }) {
-  const [state, formAction, pending] = useActionState(action, { errors: {} })
+export default function BlogPostForm({ postId, initialData }) {
+  const router = useRouter()
+  const [errors, setErrors] = useState({})
+  const [message, setMessage] = useState('')
+  const [pending, setPending] = useState(false)
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setPending(true)
+    setErrors({})
+    setMessage('')
+
+    const formData = new FormData(e.currentTarget)
+    const url = postId ? `/api/admin/blog/${postId}` : '/api/admin/blog'
+    const res = await fetch(url, { method: 'POST', body: formData })
+    const data = await res.json().catch(() => ({}))
+
+    if (res.ok && data.success) {
+      router.push('/admin/blog')
+      return
+    }
+
+    setErrors(data.errors || {})
+    setMessage(data.message || 'Something went wrong. Please try again.')
+    setPending(false)
+  }
 
   return (
-    <form action={formAction} className="admin-card" style={{ maxWidth: '640px' }}>
+    <form onSubmit={handleSubmit} className="admin-card" style={{ maxWidth: '640px' }}>
       <div className="admin-field">
         <label className="admin-label">Title</label>
         <input className="admin-input" name="title" defaultValue={initialData?.title} required />
-        {state.errors?.title && <p className="admin-error">{state.errors.title[0]}</p>}
+        {errors.title && <p className="admin-error">{errors.title[0]}</p>}
       </div>
       <div className="admin-field">
         <label className="admin-label">Slug</label>
         <input className="admin-input" name="slug" defaultValue={initialData?.slug} required />
-        {state.errors?.slug && <p className="admin-error">{state.errors.slug[0]}</p>}
+        {errors.slug && <p className="admin-error">{errors.slug[0]}</p>}
       </div>
       <div className="admin-field">
         <label className="admin-label">Excerpt</label>
         <textarea className="admin-textarea" name="excerpt" rows={2} defaultValue={initialData?.excerpt} required />
-        {state.errors?.excerpt && <p className="admin-error">{state.errors.excerpt[0]}</p>}
+        {errors.excerpt && <p className="admin-error">{errors.excerpt[0]}</p>}
       </div>
       <div className="admin-field">
         <label className="admin-label">Body (optional)</label>
@@ -30,15 +55,15 @@ export default function BlogPostForm({ action, initialData }) {
       <div className="admin-field">
         <label className="admin-label">Category</label>
         <input className="admin-input" name="category" defaultValue={initialData?.category} placeholder="e.g. AR/VR, Events, Technology" required />
-        {state.errors?.category && <p className="admin-error">{state.errors.category[0]}</p>}
+        {errors.category && <p className="admin-error">{errors.category[0]}</p>}
       </div>
       <ImageUploader name="image" defaultValue={initialData?.image} label="Image" />
-      {state.errors?.image && <p className="admin-error" style={{ marginTop: '-0.75rem', marginBottom: '1.1rem' }}>{state.errors.image[0]}</p>}
+      {errors.image && <p className="admin-error" style={{ marginTop: '-0.75rem', marginBottom: '1.1rem' }}>{errors.image[0]}</p>}
       <div className="admin-field" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
         <input type="checkbox" name="published" defaultChecked={initialData?.published ?? true} id="published" />
         <label htmlFor="published" className="admin-label" style={{ marginBottom: 0 }}>Published</label>
       </div>
-      {state.message && <p className="admin-error" style={{ marginBottom: '1rem' }}>{state.message}</p>}
+      {message && <p className="admin-error" style={{ marginBottom: '1rem' }}>{message}</p>}
       <button className="admin-btn admin-btn-primary" type="submit" disabled={pending}>
         {pending ? 'Saving...' : 'Save'}
       </button>

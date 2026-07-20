@@ -5,6 +5,10 @@ const nextConfig = {
       { protocol: 'https', hostname: 'xri.com.bd' },
       { protocol: 'https', hostname: '**.public.blob.vercel-storage.com' },
     ],
+    // Next 16 only serves qualities in this list (default is just [75]) —
+    // without 80 here, every quality={80} next/image call gets silently
+    // clamped down to 75.
+    qualities: [75, 80],
   },
   async headers() {
     return [

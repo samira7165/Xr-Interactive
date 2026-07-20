@@ -38,16 +38,18 @@ export default function PortfolioGrid({ items }) {
           <FadeIn key={p.id} delay={i * 60}>
             <div className="portfolio-card">
               <div className="card-image">
-                <Image
-                  src={p.thumbnail}
-                  alt={p.title}
-                  width={400}
-                  height={220}
-                  quality={80}
-                  loading="lazy"
-                  sizes="(max-width: 640px) 100vw, 400px"
-                  style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                />
+                {p.thumbnail && (
+                  <Image
+                    src={p.thumbnail}
+                    alt={p.title}
+                    width={400}
+                    height={220}
+                    quality={80}
+                    loading="lazy"
+                    sizes="(max-width: 640px) 100vw, 400px"
+                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                )}
                 <span className="card-category">{p.category}</span>
               </div>
               <div className="card-body">

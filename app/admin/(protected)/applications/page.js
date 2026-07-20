@@ -2,6 +2,19 @@ import { prisma } from '@/lib/prisma'
 import { deleteApplication } from './actions'
 import DeleteApplicationButton from './DeleteApplicationButton'
 
+// Defense in depth: these fields are validated at submission time (see
+// lib/validation.js), but this guards the render site too, so an `<a href>`
+// pointing at a javascript:/data: URI can never reach the DOM regardless of
+// how the value got into the database.
+function isSafeHttpUrl(value) {
+  try {
+    const url = new URL(value)
+    return url.protocol === 'http:' || url.protocol === 'https:'
+  } catch {
+    return false
+  }
+}
+
 export default async function AdminApplicationsList() {
   const applications = await prisma.jobApplication.findMany({
     orderBy: { createdAt: 'desc' },
@@ -34,12 +47,14 @@ export default async function AdminApplicationsList() {
                 <td>{app.job?.title || '—'}</td>
                 <td>{app.country}</td>
                 <td>
-                  {app.linkedin ? (
+                  {app.linkedin && isSafeHttpUrl(app.linkedin) ? (
                     <a href={app.linkedin} target="_blank" rel="noopener noreferrer" style={{ color: 'var(--purple-light)' }}>Profile</a>
                   ) : '—'}
                 </td>
                 <td>
-                  <a href={app.resumeUrl} target="_blank" rel="noopener noreferrer" className="admin-btn" style={{ textDecoration: 'none', fontSize: '0.8rem' }}>View CV</a>
+                  {isSafeHttpUrl(app.resumeUrl) ? (
+                    <a href={app.resumeUrl} target="_blank" rel="noopener noreferrer" className="admin-btn" style={{ textDecoration: 'none', fontSize: '0.8rem' }}>View CV</a>
+                  ) : '—'}
                 </td>
                 <td>{new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                 <td>

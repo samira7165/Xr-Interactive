@@ -240,16 +240,18 @@ export default function HomeContent({ projects = [] }) {
               <div className="portfolio-card">
                 <div className="card-image">
                   <Parallax speed={0.15}>
-                    <Image
-                      src={p.thumbnail}
-                      alt={p.title}
-                      width={400}
-                      height={220}
-                      quality={80}
-                      loading="lazy"
-                      sizes="(max-width: 640px) 100vw, 400px"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                    {p.thumbnail && (
+                      <Image
+                        src={p.thumbnail}
+                        alt={p.title}
+                        width={400}
+                        height={220}
+                        quality={80}
+                        loading="lazy"
+                        sizes="(max-width: 640px) 100vw, 400px"
+                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      />
+                    )}
                   </Parallax>
                   <span className="card-category">{p.category}</span>
                 </div>

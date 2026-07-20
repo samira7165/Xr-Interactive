@@ -50,16 +50,18 @@ export default async function Blog() {
             <ScrollReveal key={post.id} direction="up" delay={i * 0.08}>
               <article className="blog-card">
                 <div className="blog-image">
-                  <Image
-                    src={post.image}
-                    alt={post.title}
-                    width={400}
-                    height={200}
-                    quality={80}
-                    loading="lazy"
-                    sizes="(max-width: 640px) 100vw, 400px"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                  />
+                  {post.image && (
+                    <Image
+                      src={post.image}
+                      alt={post.title}
+                      width={400}
+                      height={200}
+                      quality={80}
+                      loading="lazy"
+                      sizes="(max-width: 640px) 100vw, 400px"
+                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                  )}
                 </div>
                 <div className="blog-body">
                   <div className="blog-meta">

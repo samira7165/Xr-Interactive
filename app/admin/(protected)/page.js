@@ -14,8 +14,11 @@ function dayKey(date) {
 }
 
 function bucketByDay(dates, days) {
+  // UTC throughout, matching dayKey's toISOString() — mixing this with local
+  // setHours() would shift "today" by the server's UTC offset, silently
+  // dropping the current day's data whenever the runtime isn't UTC.
   const today = new Date()
-  today.setHours(0, 0, 0, 0)
+  today.setUTCHours(0, 0, 0, 0)
   const buckets = new Map()
   for (let i = days - 1; i >= 0; i--) {
     buckets.set(dayKey(new Date(today.getTime() - i * DAY_MS)), 0)

@@ -1,30 +1,55 @@
 'use client'
 
-import { useActionState } from 'react'
+import { useState } from 'react'
+import { useRouter } from 'next/navigation'
 import ServiceIcon from '@/components/ServiceIcon'
 import MultiImageUploader from '../MultiImageUploader'
 
-export default function ServiceForm({ action, initialData }) {
-  const [state, formAction, pending] = useActionState(action, { errors: {} })
+export default function ServiceForm({ serviceId, initialData }) {
+  const router = useRouter()
+  const [errors, setErrors] = useState({})
+  const [message, setMessage] = useState('')
+  const [pending, setPending] = useState(false)
   const featuresDefault = Array.isArray(initialData?.features) ? initialData.features.join('\n') : ''
 
+  async function handleSubmit(e) {
+    e.preventDefault()
+    setPending(true)
+    setErrors({})
+    setMessage('')
+
+    const formData = new FormData(e.currentTarget)
+    const url = serviceId ? `/api/admin/services/${serviceId}` : '/api/admin/services'
+    const res = await fetch(url, { method: 'POST', body: formData })
+    const data = await res.json().catch(() => ({}))
+
+    if (res.ok && data.success) {
+      router.push('/admin/services')
+      return
+    }
+
+    setErrors(data.errors || {})
+    setMessage(data.message || 'Something went wrong. Please try again.')
+    setPending(false)
+  }
+
   return (
-    <form action={formAction} className="admin-card" style={{ maxWidth: '640px' }}>
+    <form onSubmit={handleSubmit} className="admin-card" style={{ maxWidth: '640px' }}>
       <div className="admin-field">
         <label className="admin-label">Title</label>
         <input className="admin-input" name="title" defaultValue={initialData?.title} required />
-        {state.errors?.title && <p className="admin-error">{state.errors.title[0]}</p>}
+        {errors.title && <p className="admin-error">{errors.title[0]}</p>}
       </div>
       <div className="admin-field">
         <label className="admin-label">Description</label>
         <textarea className="admin-textarea" name="description" rows={3} defaultValue={initialData?.description} required />
-        {state.errors?.description && <p className="admin-error">{state.errors.description[0]}</p>}
+        {errors.description && <p className="admin-error">{errors.description[0]}</p>}
       </div>
       <div className="admin-field">
         <label className="admin-label">Icon (lucide-react icon name, e.g. Glasses, Gamepad2, Globe)</label>
         <input className="admin-input" name="icon" defaultValue={initialData?.icon} required />
         {initialData?.icon && <div style={{ marginTop: '0.5rem' }}><ServiceIcon name={initialData.icon} size={24} color="#C084FC" /></div>}
-        {state.errors?.icon && <p className="admin-error">{state.errors.icon[0]}</p>}
+        {errors.icon && <p className="admin-error">{errors.icon[0]}</p>}
       </div>
       <div className="admin-field">
         <label className="admin-label">Tag (short label shown on the homepage slideshow, e.g. "XR")</label>
@@ -43,7 +68,7 @@ export default function ServiceForm({ action, initialData }) {
         <label className="admin-label">Display Order</label>
         <input className="admin-input" type="number" name="order" defaultValue={initialData?.order ?? 0} />
       </div>
-      {state.message && <p className="admin-error" style={{ marginBottom: '1rem' }}>{state.message}</p>}
+      {message && <p className="admin-error" style={{ marginBottom: '1rem' }}>{message}</p>}
       <button className="admin-btn admin-btn-primary" type="submit" disabled={pending}>
         {pending ? 'Saving...' : 'Save'}
       </button>
