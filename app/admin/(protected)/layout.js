@@ -15,7 +15,7 @@ export default async function ProtectedAdminLayout({ children }) {
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
   const [currentUser, visitCount, newContacts] = await Promise.all([
-    prisma.adminUser.findUnique({ where: { id: Number(session.user.id) } }),
+    prisma.adminUser.findUnique({ where: { id: Number(session.user.id) }, select: { name: true, image: true } }),
     prisma.pageView.count(),
     prisma.contact.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
   ])

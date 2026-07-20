@@ -1,10 +1,15 @@
 import { NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
-import path from 'path'
 import { auth } from '@/auth'
 
-const ALLOWED_TYPES = ['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml']
-const MAX_SIZE = 10 * 1024 * 1024 // 10MB
+// SVG is deliberately excluded: it's XML and can carry executable <script>
+// content, making user-uploaded SVGs a stored-XSS vector.
+const ALLOWED_EXTENSIONS = {
+  'image/png': '.png',
+  'image/jpeg': '.jpg',
+  'image/webp': '.webp',
+}
+const MAX_SIZE = 5 * 1024 * 1024 // 5MB
 
 export async function POST(request) {
   const session = await auth()
@@ -19,15 +24,18 @@ export async function POST(request) {
     return NextResponse.json({ error: 'No file provided' }, { status: 400 })
   }
 
-  if (!ALLOWED_TYPES.includes(file.type)) {
-    return NextResponse.json({ error: 'Unsupported file type. Use PNG, JPEG, WebP, GIF, or SVG.' }, { status: 400 })
+  const ext = ALLOWED_EXTENSIONS[file.type]
+  if (!ext) {
+    return NextResponse.json({ error: 'Unsupported file type. Use PNG, JPEG, or WebP.' }, { status: 400 })
   }
 
   if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: 'File too large (max 10MB).' }, { status: 400 })
+    return NextResponse.json({ error: 'File too large (max 5MB).' }, { status: 400 })
   }
 
-  const ext = path.extname(file.name) || `.${file.type.split('/')[1]}`
+  // The extension is derived entirely from the validated MIME type above —
+  // the original filename is never used, so it can't smuggle a path or a
+  // misleading extension through.
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
 
   const blob = await put(`uploads/${filename}`, file, {

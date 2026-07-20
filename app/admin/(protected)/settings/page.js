@@ -5,8 +5,9 @@ import SettingsForm from './SettingsForm'
 
 export default async function SettingsPage() {
   const session = await auth()
-  const currentUser = await prisma.adminUser.findUnique({ where: { id: Number(session.user.id) } })
-  const admins = await prisma.adminUser.findMany({ orderBy: { createdAt: 'asc' } })
+  const userFields = { id: true, name: true, email: true, image: true, role: true, createdAt: true }
+  const currentUser = await prisma.adminUser.findUnique({ where: { id: Number(session.user.id) }, select: userFields })
+  const admins = await prisma.adminUser.findMany({ orderBy: { createdAt: 'asc' }, select: userFields })
 
   return (
     <div>
