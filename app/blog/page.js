@@ -32,8 +32,21 @@ export default async function Blog() {
       </div>
 
       <section className="section" style={{ paddingTop: '1rem' }}>
+        {blogs.length === 0 ? (
+          <ScrollReveal direction="up">
+            <div style={{
+              textAlign: 'center', padding: '4rem 2rem',
+              background: 'rgba(113,82,156,0.05)', border: '1px solid rgba(255,255,255,0.06)',
+              borderRadius: '16px',
+            }}>
+              <p style={{ color: 'var(--text-secondary)' }}>
+                Coming soon — we&rsquo;re working on our first posts.
+              </p>
+            </div>
+          </ScrollReveal>
+        ) : (
         <div className="blog-grid">
-          {(blogs ?? []).map((post, i) => (
+          {blogs.map((post, i) => (
             <ScrollReveal key={post.id} direction="up" delay={i * 0.08}>
               <article className="blog-card">
                 <div className="blog-image">
@@ -75,6 +88,7 @@ export default async function Blog() {
             </ScrollReveal>
           ))}
         </div>
+        )}
       </section>
     </main>
   )
