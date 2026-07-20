@@ -1,10 +1,18 @@
 'use server'
 
+import { headers } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import { ApplicationSchema } from '@/lib/validation'
 import { sendApplicationNotification } from '@/lib/email'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function submitApplication(jobId, prevState, formData) {
+  const ip = getClientIp(await headers())
+  const { allowed, retryAfter } = rateLimit(`apply:${ip}`, { limit: 5, windowMs: 60_000 })
+  if (!allowed) {
+    return { errors: {}, success: false, message: `Too many requests. Please try again in ${retryAfter}s.` }
+  }
+
   const validated = ApplicationSchema.safeParse({
     name: formData.get('name'),
     email: formData.get('email'),

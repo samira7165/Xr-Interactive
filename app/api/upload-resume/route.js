@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 import { put } from '@vercel/blob'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 // Deliberately public/unauthenticated — job applicants aren't logged in. Unlike
 // /api/upload (admin-only, images), this accepts resume documents from anyone.
-// No rate limiting: acceptable for now, but worth adding if abuse shows up.
 
 const ALLOWED_EXTENSIONS = {
   'application/pdf': '.pdf',
@@ -13,6 +13,17 @@ const ALLOWED_EXTENSIONS = {
 const MAX_SIZE = 5 * 1024 * 1024 // 5MB
 
 export async function POST(request) {
+  const ip = getClientIp(request.headers)
+  // Slightly more generous than the form-submit endpoints — someone picking
+  // the wrong file and re-uploading a couple of times is normal here.
+  const { allowed, retryAfter } = rateLimit(`upload-resume:${ip}`, { limit: 10, windowMs: 60_000 })
+  if (!allowed) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please try again later.' },
+      { status: 429, headers: { 'Retry-After': String(retryAfter) } }
+    )
+  }
+
   const formData = await request.formData()
   const file = formData.get('file')
 

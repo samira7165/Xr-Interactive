@@ -35,6 +35,13 @@ export default function ContactForm() {
         return
       }
 
+      if (res.status === 429) {
+        const { error } = await res.json().catch(() => ({}))
+        setServerError(error || 'Too many requests. Please try again later.')
+        setStatus('idle')
+        return
+      }
+
       if (!res.ok) {
         setServerError('Something went wrong. Please try again.')
         setStatus('idle')
