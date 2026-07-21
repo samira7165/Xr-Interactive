@@ -132,8 +132,12 @@ async function seedAdmin() {
   }
 
   const passwordHash = await bcrypt.hash(password, 10)
-  await prisma.adminUser.create({ data: { email, passwordHash } })
-  console.log(`Seeded admin user ${email}.`)
+  // This only runs when there are zero admins, so it's always bootstrapping
+  // the very first account — make it SUPER_ADMIN, since both the signup
+  // action and this seed (on any later run) create plain ADMIN accounts and
+  // there'd otherwise be no way to ever reach SUPER_ADMIN.
+  await prisma.adminUser.create({ data: { email, passwordHash, role: 'SUPER_ADMIN' } })
+  console.log(`Seeded SUPER_ADMIN user ${email}.`)
 }
 
 async function main() {
