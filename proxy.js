@@ -14,8 +14,12 @@ export default auth((req) => {
     return NextResponse.redirect(new URL('/admin/login', req.nextUrl))
   }
 
-  // Creating new admin accounts is a SUPER_ADMIN-only action.
-  if (pathname === '/admin/signup' && req.auth?.user?.role !== 'SUPER_ADMIN') {
+  // Creating admin accounts and managing team members (who appears on the
+  // public site) are SUPER_ADMIN-only. Server Action requests are exempted
+  // from this redirect for the same reason as above — the team Server
+  // Action and API routes re-check the role themselves.
+  const isSuperAdminOnlyRoute = pathname === '/admin/signup' || pathname.startsWith('/admin/team')
+  if (isSuperAdminOnlyRoute && !isServerAction && req.auth?.user?.role !== 'SUPER_ADMIN') {
     return NextResponse.redirect(new URL('/admin', req.nextUrl))
   }
 })

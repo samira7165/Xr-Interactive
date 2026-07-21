@@ -17,7 +17,7 @@ const navGroups = [
       { href: '/admin/contacts', label: 'Contacts', icon: Mail, badgeKey: 'contacts' },
       { href: '/admin/portfolio', label: 'Portfolio', icon: Briefcase },
       { href: '/admin/services', label: 'Services', icon: Sparkles },
-      { href: '/admin/team', label: 'Team Members', icon: Users },
+      { href: '/admin/team', label: 'Team Members', icon: Users, superAdminOnly: true },
       { href: '/admin/careers', label: 'Careers', icon: GraduationCap },
       { href: '/admin/applications', label: 'Applications', icon: FileUser },
     ],
@@ -32,9 +32,13 @@ const navGroups = [
   },
 ]
 
-export default function Sidebar({ userLabel, userImage, badges = {} }) {
+export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
   const pathname = usePathname()
   const [mobileOpen, setMobileOpen] = useState(false)
+  const isSuperAdmin = role === 'SUPER_ADMIN'
+  const visibleGroups = navGroups
+    .map(group => ({ ...group, items: group.items.filter(item => !item.superAdminOnly || isSuperAdmin) }))
+    .filter(group => group.items.length > 0)
 
   useEffect(() => { setMobileOpen(false) }, [pathname])
 
@@ -76,7 +80,7 @@ export default function Sidebar({ userLabel, userImage, badges = {} }) {
         </div>
 
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto' }}>
-          {navGroups.map((group, gi) => (
+          {visibleGroups.map((group, gi) => (
             <div key={gi} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
               {group.label && (
                 <div style={{

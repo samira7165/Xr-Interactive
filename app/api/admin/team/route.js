@@ -25,6 +25,9 @@ function parseForm(formData) {
 export async function POST(request) {
   const session = await auth()
   if (!session) return NextResponse.json({ message: 'Unauthorized' }, { status: 401 })
+  // This path isn't under proxy.js's /admin matcher, so it must check the
+  // SUPER_ADMIN-only rule itself rather than relying on the route guard.
+  if (session.user?.role !== 'SUPER_ADMIN') return NextResponse.json({ message: 'Forbidden' }, { status: 403 })
 
   const formData = await request.formData()
   const parsed = parseForm(formData)
