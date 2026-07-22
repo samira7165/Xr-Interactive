@@ -52,8 +52,8 @@ export default async function AdminApplicationsList() {
                   ) : '—'}
                 </td>
                 <td>
-                  {isSafeHttpUrl(app.resumeUrl) ? (
-                    <a href={app.resumeUrl} target="_blank" rel="noopener noreferrer" className="admin-btn" style={{ textDecoration: 'none', fontSize: '0.8rem' }}>View CV</a>
+                  {app.resumeUrl ? (
+                    <a href={`/api/admin/applications/${app.id}/resume`} target="_blank" rel="noopener noreferrer" className="admin-btn" style={{ textDecoration: 'none', fontSize: '0.8rem' }}>View CV</a>
                   ) : '—'}
                 </td>
                 <td>{new Date(app.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
