@@ -212,7 +212,7 @@ export default async function AdminDashboard() {
   return (
     <div>
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: '0.35rem' }}>
-        Welcome back, {greetingName} 👋
+        Welcome back, {greetingName}
       </h1>
       <p style={{ color: 'var(--text-secondary)', marginBottom: '2rem' }}>Here&rsquo;s what&rsquo;s happening with your site&rsquo;s content and traffic.</p>
 

@@ -3,7 +3,11 @@
 import { AuthError } from 'next-auth'
 import { signIn } from '@/auth'
 import { LoginSchema } from '@/lib/validation'
-import { getLoginDelayMs, recordFailedLogin, clearLoginAttempts } from '@/lib/login-throttle'
+import { checkLoginLock, recordFailedLogin, clearLoginAttempts } from '@/lib/login-throttle'
+
+function lockMessage(minutesRemaining) {
+  return `Too many failed attempts. Try again in ${minutesRemaining} minute${minutesRemaining === 1 ? '' : 's'}.`
+}
 
 export async function login(prevState, formData) {
   const validatedFields = LoginSchema.safeParse({
@@ -18,14 +22,19 @@ export async function login(prevState, formData) {
   const { email, password } = validatedFields.data
   const throttleKey = email.toLowerCase()
 
-  const delayMs = await getLoginDelayMs(throttleKey)
-  if (delayMs > 0) await new Promise((resolve) => setTimeout(resolve, delayMs))
+  const lock = await checkLoginLock(throttleKey)
+  if (lock.locked) {
+    return { error: lockMessage(lock.minutesRemaining) }
+  }
 
   try {
     await signIn('credentials', { email, password, redirectTo: '/admin' })
   } catch (error) {
     if (error instanceof AuthError) {
-      await recordFailedLogin(throttleKey)
+      const result = await recordFailedLogin(throttleKey)
+      if (result.locked) {
+        return { error: lockMessage(result.minutesRemaining) }
+      }
       return { error: 'Invalid email or password.' }
     }
     // Any other thrown value here is Next's internal redirect signal for a

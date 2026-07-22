@@ -128,15 +128,20 @@ model AdminUser {
   createdAt    DateTime @default(now())
 }
 
-// Progressive login-delay counter for the admin login form (lib/login-throttle.js).
+// Login lockout counter for the admin login form (lib/login-throttle.js).
 // Lives in the DB rather than in-memory because Vercel can route consecutive
 // requests to different serverless instances — an in-memory counter doesn't
 // reliably survive between two failed attempts from a real attacker (or a
 // tester switching browsers), which defeated the whole point of the throttle.
 model LoginAttempt {
-  email       String   @id
-  count       Int      @default(0)
-  lastAttempt DateTime
+  email        String    @id
+  count        Int       @default(0)
+  lastAttempt  DateTime
+  lockedUntil  DateTime?
+  // How many times this email has been locked out — each lockout is longer
+  // than the last (15 min, then 25, then 35, ...), reset only by a
+  // successful login.
+  lockoutStage Int       @default(0)
 }
 
 // Tracks public site visits (marketing pages only, not /admin) for the visitor
