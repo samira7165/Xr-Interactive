@@ -47,3 +47,21 @@ next-env.d.ts
 # uploaded images (dev-only local storage, see /api/upload)
 /public/uploads/*
 !/public/uploads/.gitkeep
+
+# Prisma
+prisma/migrations/**/migration_lock.toml
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# OS files
+Thumbs.db
+
+# Logs
+logs/
+*.log
+
+# Uploaded files (if storing locally during dev)
+/uploads/
+/public/uploads/

@@ -6,8 +6,22 @@ async function uploadFile(file) {
   const formData = new FormData()
   formData.append('file', file)
   const res = await fetch('/api/upload-resume', { method: 'POST', body: formData })
-  const data = await res.json()
-  if (!res.ok) throw new Error(data.error || 'Upload failed')
+
+  // Read as text first so we never crash on an empty/non-JSON body
+  const text = await res.text()
+  let data = null
+  try {
+    data = text ? JSON.parse(text) : null
+  } catch {
+    // Response wasn't valid JSON (e.g. an HTML error page or empty body)
+  }
+
+  if (!res.ok) {
+    throw new Error(data?.error || `Upload failed (${res.status})`)
+  }
+  if (!data) {
+    throw new Error('Server returned an empty response')
+  }
   return data
 }
 
