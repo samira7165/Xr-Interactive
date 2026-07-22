@@ -1,8 +1,11 @@
 import { Eye } from 'lucide-react'
 import { redirect } from 'next/navigation'
+import Link from 'next/link'
 import { auth, signOut } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import Sidebar from './Sidebar'
+import AdminSearch from './AdminSearch'
+import AdminNotifications from './AdminNotifications'
 
 // Every page under here depends on the current user's session — it must never
 // be cached/prerendered, or one user's (or an anonymous build-time) response
@@ -14,10 +17,11 @@ export default async function ProtectedAdminLayout({ children }) {
   if (!session || !session.user?.id) redirect('/admin/login')
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-  const [currentUser, visitCount, newContacts] = await Promise.all([
+  const [currentUser, visitCount, newContacts, newApplications] = await Promise.all([
     prisma.adminUser.findUnique({ where: { id: Number(session.user.id) }, select: { name: true, image: true, role: true } }),
     prisma.pageView.count(),
     prisma.contact.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+    prisma.jobApplication.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
   ])
 
   const userLabel = currentUser?.name || session.user?.email
@@ -28,16 +32,37 @@ export default async function ProtectedAdminLayout({ children }) {
       <Sidebar userLabel={userLabel} userImage={userImage} role={currentUser?.role} badges={{ contacts: newContacts }} />
       <div style={{ flex: 1, minWidth: 0 }} className="admin-content">
         <header className="admin-header" style={{
-          display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+          display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem',
           padding: '1rem 2rem', borderBottom: '1px solid var(--border)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
+          <div className="admin-header-visits" style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--text-secondary)', fontSize: '0.85rem', flexShrink: 0 }}>
             <Eye size={16} strokeWidth={2} />
             <span>{visitCount.toLocaleString()} site visits</span>
           </div>
-          <form action={async () => { 'use server'; await signOut({ redirectTo: '/admin/login' }) }}>
-            <button type="submit" className="admin-btn admin-btn-ghost">Log out</button>
-          </form>
+
+          <AdminSearch />
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexShrink: 0 }}>
+            <AdminNotifications newContacts={newContacts} newApplications={newApplications} />
+
+            <Link href="/admin/settings" aria-label="Profile" style={{ display: 'flex', flexShrink: 0 }}>
+              {userImage ? (
+                <img src={userImage} alt="" style={{ width: '32px', height: '32px', borderRadius: '50%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{
+                  width: '32px', height: '32px', borderRadius: '50%', background: 'var(--gradient)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  fontSize: '0.8rem', fontWeight: 700, color: '#fff',
+                }}>
+                  {userLabel?.[0]?.toUpperCase() || '?'}
+                </div>
+              )}
+            </Link>
+
+            <form action={async () => { 'use server'; await signOut({ redirectTo: '/admin/login' }) }}>
+              <button type="submit" className="admin-btn admin-btn-ghost">Log out</button>
+            </form>
+          </div>
         </header>
         <main className="admin-main" style={{ padding: '2rem', maxWidth: '1200px' }}>
           {children}
@@ -88,6 +113,9 @@ export default async function ProtectedAdminLayout({ children }) {
           .admin-header { padding: 0.85rem 1.25rem; }
           .admin-main { padding: 1.25rem; }
           .admin-grid-stats { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.85rem; }
+        }
+        @media (max-width: 700px) {
+          .admin-header-visits { display: none; }
         }
         @media (max-width: 480px) {
           .admin-header { flex-wrap: wrap; gap: 0.5rem; }
