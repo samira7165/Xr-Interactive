@@ -2,6 +2,8 @@ import Link from 'next/link'
 import { auth } from '@/auth'
 import { prisma } from '@/lib/prisma'
 import SettingsForm from './SettingsForm'
+import RemoveAdminButton from './RemoveAdminButton'
+import { removeAdmin } from './actions'
 
 export default async function SettingsPage() {
   const session = await auth()
@@ -53,6 +55,7 @@ export default async function SettingsPage() {
                   <th>Email</th>
                   <th>Role</th>
                   <th>Added</th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -62,6 +65,11 @@ export default async function SettingsPage() {
                     <td>{admin.email}</td>
                     <td><RoleBadge role={admin.role} /></td>
                     <td>{new Date(admin.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                    <td>
+                      {admin.id !== currentUser?.id && (
+                        <RemoveAdminButton onRemove={removeAdmin.bind(null, admin.id)} />
+                      )}
+                    </td>
                   </tr>
                 ))}
               </tbody>
