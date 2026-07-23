@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Mail, FileText, Briefcase, Sparkles, Users, GraduationCap, FileUser,
-  Settings, Menu, X,
+  Settings, Menu, X, MessageSquare,
 } from 'lucide-react'
 
 const navGroups = [
@@ -24,7 +24,10 @@ const navGroups = [
   },
   {
     label: 'Content',
-    items: [{ href: '/admin/blog', label: 'Blog', icon: FileText }],
+    items: [
+      { href: '/admin/blog', label: 'Blog', icon: FileText },
+      { href: '/admin/blog/comments', label: 'Comments', icon: MessageSquare, badgeKey: 'comments' },
+    ],
   },
   {
     label: 'System',

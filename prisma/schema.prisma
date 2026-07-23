@@ -78,6 +78,20 @@ model Post {
   published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  comments  Comment[]
+}
+
+// Public visitors can submit comments on a blog post without authenticating,
+// so each one starts unapproved and only shows up on the post once an admin
+// approves it (see /api/blog/[slug]/comments and /admin/blog/comments).
+model Comment {
+  id        Int      @id @default(autoincrement())
+  postId    Int
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
+  name      String
+  body      String   @db.Text
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
 }
 
 model Job {

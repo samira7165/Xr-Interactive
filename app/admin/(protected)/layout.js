@@ -17,11 +17,12 @@ export default async function ProtectedAdminLayout({ children }) {
   if (!session || !session.user?.id) redirect('/admin/login')
 
   const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
-  const [currentUser, visitCount, newContacts, newApplications] = await Promise.all([
+  const [currentUser, visitCount, newContacts, newApplications, pendingComments] = await Promise.all([
     prisma.adminUser.findUnique({ where: { id: Number(session.user.id) }, select: { name: true, image: true, role: true } }),
     prisma.pageView.count(),
     prisma.contact.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
     prisma.jobApplication.count({ where: { createdAt: { gte: sevenDaysAgo } } }),
+    prisma.comment.count({ where: { approved: false } }),
   ])
 
   const userLabel = currentUser?.name || session.user?.email
@@ -29,7 +30,7 @@ export default async function ProtectedAdminLayout({ children }) {
 
   return (
     <div style={{ display: 'flex', flexWrap: 'wrap' }} className="admin-shell">
-      <Sidebar userLabel={userLabel} userImage={userImage} role={currentUser?.role} badges={{ contacts: newContacts }} />
+      <Sidebar userLabel={userLabel} userImage={userImage} role={currentUser?.role} badges={{ contacts: newContacts, comments: pendingComments }} />
       <div style={{ flex: 1, minWidth: 0 }} className="admin-content">
         <header className="admin-header" style={{
           display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem',

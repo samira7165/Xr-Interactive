@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import Image from 'next/image'
 import { ScrollReveal } from '@/components/ScrollReveal'
 import { prisma } from '@/lib/prisma'
@@ -48,7 +49,7 @@ export default async function Blog() {
         <div className="blog-grid">
           {blogs.map((post, i) => (
             <ScrollReveal key={post.id} direction="up" delay={i * 0.08}>
-              <article className="blog-card">
+              <Link href={`/blog/${post.slug}`} className="blog-card" style={{ display: 'block', textDecoration: 'none', color: 'inherit' }}>
                 <div className="blog-image">
                   {post.image && (
                     <Image
@@ -86,7 +87,7 @@ export default async function Blog() {
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                   </span>
                 </div>
-              </article>
+              </Link>
             </ScrollReveal>
           ))}
         </div>
