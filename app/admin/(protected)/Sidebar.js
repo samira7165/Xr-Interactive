@@ -173,18 +173,12 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
 
         @media (min-width: 901px) {
           /* Collapsed to an icon-only rail by default; hovering expands it
-             over the page content (an overlay, not a layout shift) to show
-             labels. The root keeps reserving the collapsed width so main
-             content never jumps when the aside expands. */
-          .admin-sidebar-root { width: 76px; }
+             in normal flow, so the main content area (flex: 1 next to this)
+             shrinks and shifts right rather than being covered. */
+          .admin-sidebar-root { width: 76px; transition: width 0.18s ease; }
+          .admin-sidebar-root:hover { width: 240px; }
           .admin-sidebar {
-            position: fixed; top: 0; left: 0; width: 76px; height: 100vh;
-            overflow: hidden; z-index: 150;
-            transition: width 0.18s ease;
-          }
-          .admin-sidebar-root:hover .admin-sidebar {
-            width: 240px;
-            box-shadow: 8px 0 24px rgba(0,0,0,0.35);
+            width: 100%; height: 100vh; overflow: hidden;
           }
           .admin-sidebar-text {
             opacity: 0; max-width: 0; overflow: hidden;

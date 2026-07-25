@@ -65,7 +65,7 @@ export default async function ProtectedAdminLayout({ children }) {
             </form>
           </div>
         </header>
-        <main className="admin-main" style={{ padding: '2rem', maxWidth: '1200px' }}>
+        <main className="admin-main" style={{ padding: '2rem', width: '100%' }}>
           {children}
         </main>
       </div>
