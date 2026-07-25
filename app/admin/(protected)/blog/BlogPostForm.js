@@ -101,23 +101,23 @@ export default function BlogPostForm({ postId, initialData }) {
   return (
     <form onSubmit={handleSubmit} className="admin-card" style={{ maxWidth: '640px' }}>
       <div className="admin-field">
-        <label className="admin-label">Title</label>
-        <input className="admin-input" name="title" value={title} onChange={handleTitleChange} required />
+        <label className="admin-label" htmlFor="post-title">Title</label>
+        <input id="post-title" className="admin-input" name="title" value={title} onChange={handleTitleChange} required />
         {errors.title && <p className="admin-error">{errors.title[0]}</p>}
       </div>
       <div className="admin-field">
-        <label className="admin-label">Slug</label>
-        <input className="admin-input" name="slug" value={slug} onChange={handleSlugChange} required />
+        <label className="admin-label" htmlFor="post-slug">Slug</label>
+        <input id="post-slug" className="admin-input" name="slug" value={slug} onChange={handleSlugChange} required />
         {errors.slug && <p className="admin-error">{errors.slug[0]}</p>}
       </div>
       <div className="admin-field">
-        <label className="admin-label">Excerpt</label>
-        <textarea className="admin-textarea" name="excerpt" rows={2} defaultValue={initialData?.excerpt} required />
+        <label className="admin-label" htmlFor="post-excerpt">Excerpt</label>
+        <textarea id="post-excerpt" className="admin-textarea" name="excerpt" rows={2} defaultValue={initialData?.excerpt} required />
         {errors.excerpt && <p className="admin-error">{errors.excerpt[0]}</p>}
       </div>
       <div className="admin-field">
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.75rem' }}>
-          <label className="admin-label" style={{ marginBottom: 0 }}>Body (optional)</label>
+          <label className="admin-label" htmlFor="post-body" style={{ marginBottom: 0 }}>Body (optional)</label>
           <label className="admin-btn" style={{ padding: '0.3rem 0.7rem', fontSize: '0.78rem', cursor: 'pointer' }}>
             {imageUploading ? 'Uploading...' : 'Insert Image'}
             <input
@@ -131,6 +131,7 @@ export default function BlogPostForm({ postId, initialData }) {
         </div>
         <textarea
           ref={bodyRef}
+          id="post-body"
           className="admin-textarea"
           name="body"
           rows={6}
@@ -147,8 +148,8 @@ export default function BlogPostForm({ postId, initialData }) {
         </p>
       </div>
       <div className="admin-field">
-        <label className="admin-label">Category</label>
-        <input className="admin-input" name="category" defaultValue={initialData?.category} placeholder="e.g. AR/VR, Events, Technology" required />
+        <label className="admin-label" htmlFor="post-category">Category</label>
+        <input id="post-category" className="admin-input" name="category" defaultValue={initialData?.category} placeholder="e.g. AR/VR, Events, Technology" required />
         {errors.category && <p className="admin-error">{errors.category[0]}</p>}
       </div>
       <ImageUploader name="image" defaultValue={initialData?.image} label="Image" />
