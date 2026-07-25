@@ -6,6 +6,12 @@ const nextConfig = {
   // alongside a real `next dev` the developer already has open. Unset for
   // everyone else — default '.next' behavior is unchanged.
   distDir: process.env.API_TEST_DIST_DIR || '.next',
+  // Default bottom-left position collides with the admin sidebar's collapsed
+  // icon rail (its profile card sits in that same corner) — dev-only, never
+  // ships to production, but annoying enough locally to just move it.
+  devIndicators: {
+    position: 'top-right',
+  },
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'xri.com.bd' },
