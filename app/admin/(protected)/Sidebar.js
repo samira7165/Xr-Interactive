@@ -82,7 +82,7 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
           <span className="admin-sidebar-text" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>Admin</span>
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
+        <nav className="admin-sidebar-nav" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {visibleGroups.map((group, gi) => (
             <div key={gi} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
               {group.label && (
@@ -169,6 +169,12 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
         }
         .admin-sidebar {
           width: 240px; flex-shrink: 0; height: 100%; min-height: 100vh;
+        }
+        .admin-sidebar-nav {
+          scrollbar-width: none; /* Firefox */
+        }
+        .admin-sidebar-nav::-webkit-scrollbar {
+          display: none; /* Chrome, Safari, Edge */
         }
 
         @media (min-width: 901px) {
