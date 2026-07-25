@@ -18,7 +18,7 @@ function useScrollProgress() {
   return progress
 }
 
-function TunnelParticles({ count = 2500, scrollProgress }) {
+function TunnelParticles({ count = 3600, scrollProgress }) {
   const mesh = useRef()
 
   const { basePositions, speeds } = useMemo(() => {
@@ -79,8 +79,8 @@ function TunnelParticles({ count = 2500, scrollProgress }) {
     }
     mesh.current.geometry.attributes.position.needsUpdate = true
 
-    mesh.current.material.size = 0.015 + tunnelStrength * 0.008
-    mesh.current.material.opacity = 0.8 + tunnelStrength * 0.2
+    mesh.current.material.size = 0.026 + tunnelStrength * 0.012
+    mesh.current.material.opacity = 0.9 + tunnelStrength * 0.1
   })
 
   return (
@@ -90,10 +90,10 @@ function TunnelParticles({ count = 2500, scrollProgress }) {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.015}
+        size={0.026}
         vertexColors
         transparent
-        opacity={0.8}
+        opacity={0.9}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -102,7 +102,7 @@ function TunnelParticles({ count = 2500, scrollProgress }) {
   )
 }
 
-function StarDust({ count = 1200 }) {
+function StarDust({ count = 1800 }) {
   const mesh = useRef()
   const positions = useMemo(() => {
     const pos = new Float32Array(count * 3)
@@ -127,10 +127,10 @@ function StarDust({ count = 1200 }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.008}
+        size={0.015}
         color="#ffffff"
         transparent
-        opacity={0.7}
+        opacity={0.85}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
