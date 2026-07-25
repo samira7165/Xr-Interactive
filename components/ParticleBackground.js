@@ -79,8 +79,8 @@ function TunnelParticles({ count = 3600, scrollProgress }) {
     }
     mesh.current.geometry.attributes.position.needsUpdate = true
 
-    mesh.current.material.size = 0.026 + tunnelStrength * 0.012
-    mesh.current.material.opacity = 0.9 + tunnelStrength * 0.1
+    mesh.current.material.size = 0.05 + tunnelStrength * 0.02
+    mesh.current.material.opacity = 0.95 + tunnelStrength * 0.05
   })
 
   return (
@@ -90,10 +90,10 @@ function TunnelParticles({ count = 3600, scrollProgress }) {
         <bufferAttribute attach="attributes-color" args={[colors, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.026}
+        size={0.05}
         vertexColors
         transparent
-        opacity={0.9}
+        opacity={0.95}
         sizeAttenuation
         blending={THREE.AdditiveBlending}
         depthWrite={false}
@@ -127,11 +127,11 @@ function StarDust({ count = 1800 }) {
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <pointsMaterial
-        size={0.015}
+        size={2.5}
         color="#ffffff"
         transparent
-        opacity={0.85}
-        sizeAttenuation
+        opacity={0.9}
+        sizeAttenuation={false}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
