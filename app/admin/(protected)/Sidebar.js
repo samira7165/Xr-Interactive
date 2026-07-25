@@ -78,17 +78,17 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
         display: 'flex', flexDirection: 'column', padding: '1.5rem 1rem',
       }}>
         <div style={{ padding: '0 0.5rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.6rem' }} className="admin-sidebar-brand">
-          <Image src="/logo.png" alt="XRI" width={32} height={32} style={{ objectFit: 'contain' }} priority />
-          <span style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>Admin</span>
+          <Image src="/logo.png" alt="XRI" width={32} height={32} style={{ objectFit: 'contain', flexShrink: 0 }} priority />
+          <span className="admin-sidebar-text" style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.05rem' }}>Admin</span>
         </div>
 
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto' }}>
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1, overflowY: 'auto', overflowX: 'hidden' }}>
           {visibleGroups.map((group, gi) => (
             <div key={gi} style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
               {group.label && (
-                <div style={{
+                <div className="admin-sidebar-text admin-sidebar-group-label" style={{
                   fontSize: '0.68rem', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase',
-                  color: 'var(--text-muted)', padding: '0 0.75rem', marginBottom: '0.15rem',
+                  color: 'var(--text-muted)', padding: '0 0.75rem', marginBottom: '0.15rem', whiteSpace: 'nowrap',
                 }}>
                   {group.label}
                 </div>
@@ -111,12 +111,12 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
                       transition: 'background 0.15s, color 0.15s',
                     }}
                   >
-                    <Icon size={17} strokeWidth={2} />
-                    <span style={{ flex: 1 }}>{item.label}</span>
+                    <Icon size={17} strokeWidth={2} style={{ flexShrink: 0 }} />
+                    <span className="admin-sidebar-text" style={{ flex: 1, whiteSpace: 'nowrap' }}>{item.label}</span>
                     {badge > 0 && (
-                      <span style={{
+                      <span className="admin-sidebar-text" style={{
                         fontSize: '0.72rem', fontWeight: 700, color: '#fff', background: 'var(--accent)',
-                        borderRadius: '999px', padding: '0.05rem 0.45rem', lineHeight: 1.5,
+                        borderRadius: '999px', padding: '0.05rem 0.45rem', lineHeight: 1.5, whiteSpace: 'nowrap',
                       }}>
                         {badge}
                       </span>
@@ -152,11 +152,11 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
               {userLabel?.[0]?.toUpperCase() || '?'}
             </div>
           )}
-          <div style={{ overflow: 'hidden' }}>
+          <div className="admin-sidebar-text" style={{ overflow: 'hidden' }}>
             <div style={{ fontSize: '0.85rem', fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {userLabel}
             </div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)' }}>View profile</div>
+            <div style={{ fontSize: '0.75rem', color: 'var(--text-muted)', whiteSpace: 'nowrap' }}>View profile</div>
           </div>
         </Link>
       </aside>
@@ -169,6 +169,37 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
         }
         .admin-sidebar {
           width: 240px; flex-shrink: 0; height: 100%; min-height: 100vh;
+        }
+
+        @media (min-width: 901px) {
+          /* Collapsed to an icon-only rail by default; hovering expands it
+             over the page content (an overlay, not a layout shift) to show
+             labels. The root keeps reserving the collapsed width so main
+             content never jumps when the aside expands. */
+          .admin-sidebar-root { width: 76px; }
+          .admin-sidebar {
+            position: fixed; top: 0; left: 0; width: 76px; height: 100vh;
+            overflow: hidden; z-index: 150;
+            transition: width 0.18s ease;
+          }
+          .admin-sidebar-root:hover .admin-sidebar {
+            width: 240px;
+            box-shadow: 8px 0 24px rgba(0,0,0,0.35);
+          }
+          .admin-sidebar-text {
+            opacity: 0; max-width: 0; overflow: hidden;
+            transition: opacity 0.12s ease, max-width 0.18s ease;
+          }
+          .admin-sidebar-root:hover .admin-sidebar-text {
+            opacity: 1; max-width: 160px;
+          }
+          .admin-sidebar-group-label {
+            margin-bottom: 0; max-height: 0;
+            transition: opacity 0.12s ease, max-height 0.18s ease, margin-bottom 0.18s ease;
+          }
+          .admin-sidebar-root:hover .admin-sidebar-group-label {
+            max-height: 20px; margin-bottom: 0.15rem;
+          }
         }
 
         @media (max-width: 900px) {
