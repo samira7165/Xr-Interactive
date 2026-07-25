@@ -1,5 +1,11 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // Next 16's dev/build lock lives at `${distDir}/lock`, scoped per
+  // directory regardless of port — so the API-HTTP test server (see
+  // __tests__/api-http/setup/globalSetup.js) needs its own distDir to run
+  // alongside a real `next dev` the developer already has open. Unset for
+  // everyone else — default '.next' behavior is unchanged.
+  distDir: process.env.API_TEST_DIST_DIR || '.next',
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'xri.com.bd' },
@@ -9,6 +15,11 @@ const nextConfig = {
     // without 80 here, every quality={80} next/image call gets silently
     // clamped down to 75.
     qualities: [75, 80],
+    // On networks that use NAT64/DNS64 (no native IPv4), Vercel Blob's hostname
+    // can resolve to a 64:ff9b::/96-prefixed address, which Next 16's SSRF guard
+    // (added in v16.0.0) treats as a private IP and blocks. remotePatterns above
+    // already restricts fetches to two known hosts, so this is low-risk to relax.
+    dangerouslyAllowLocalIP: true,
   },
   async headers() {
     return [

@@ -1,3 +1,4 @@
+
 {
   "name": "xri-nextjs",
   "version": "0.1.0",
@@ -7,7 +8,10 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:api": "jest --config jest.config.api.js --runInBand"
   },
   "dependencies": {
     "@prisma/adapter-mariadb": "^7.8.0",
@@ -36,4 +40,5 @@
     "jest-environment-jsdom": "^30.4.1",
     "prisma": "^7.8.0"
   }
+
 }
