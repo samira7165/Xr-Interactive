@@ -448,7 +448,7 @@ ul { list-style: none; }
 }
 .blog-detail-content h2:first-child { margin-top: 0; }
 .blog-detail-content p { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.8; margin-bottom: 1.25rem; }
-.blog-detail-inline-image { display: block; width: 100%; height: auto; border-radius: 12px; margin: 0.5rem 0 1.75rem; }
+.blog-detail-inline-image { display: block; max-width: 100%; height: auto; border-radius: 12px; margin: 0.5rem 0 1.75rem; }
 
 /* ============ CTA ============ */
 .cta-section {
