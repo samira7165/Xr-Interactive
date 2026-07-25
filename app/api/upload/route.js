@@ -12,36 +12,45 @@ const ALLOWED_EXTENSIONS = {
 const MAX_SIZE = 5 * 1024 * 1024 // 5MB
 
 export async function POST(request) {
-  const session = await auth()
-  if (!session) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  try {
+    const session = await auth()
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    const formData = await request.formData()
+    const file = formData.get('file')
+
+    if (!file || typeof file === 'string') {
+      return NextResponse.json({ error: 'No file provided' }, { status: 400 })
+    }
+
+    const ext = ALLOWED_EXTENSIONS[file.type]
+    if (!ext) {
+      return NextResponse.json({ error: 'Unsupported file type. Use PNG, JPEG, or WebP.' }, { status: 400 })
+    }
+
+    if (file.size > MAX_SIZE) {
+      return NextResponse.json({ error: 'File too large (max 5MB).' }, { status: 400 })
+    }
+
+    // The extension is derived entirely from the validated MIME type above —
+    // the original filename is never used, so it can't smuggle a path or a
+    // misleading extension through.
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
+
+    const blob = await put(`uploads/${filename}`, file, {
+      access: 'public',
+      contentType: file.type,
+      token: process.env.BLOB_READ_WRITE_TOKEN_PUBLIC, // ← must point to your PUBLIC store
+    })
+
+    return NextResponse.json({ url: blob.url })
+  } catch (err) {
+    console.error('Image upload error:', err)
+    return NextResponse.json(
+      { error: err.message || 'Upload failed' },
+      { status: 500 }
+    )
   }
-
-  const formData = await request.formData()
-  const file = formData.get('file')
-
-  if (!file || typeof file === 'string') {
-    return NextResponse.json({ error: 'No file provided' }, { status: 400 })
-  }
-
-  const ext = ALLOWED_EXTENSIONS[file.type]
-  if (!ext) {
-    return NextResponse.json({ error: 'Unsupported file type. Use PNG, JPEG, or WebP.' }, { status: 400 })
-  }
-
-  if (file.size > MAX_SIZE) {
-    return NextResponse.json({ error: 'File too large (max 5MB).' }, { status: 400 })
-  }
-
-  // The extension is derived entirely from the validated MIME type above —
-  // the original filename is never used, so it can't smuggle a path or a
-  // misleading extension through.
-  const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
-
-  const blob = await put(`uploads/${filename}`, file, {
-    access: 'public',
-    contentType: file.type,
-  })
-
-  return NextResponse.json({ url: blob.url })
 }

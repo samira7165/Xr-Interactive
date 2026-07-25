@@ -44,10 +44,16 @@ export async function POST(request) {
   // filename — the original name is only kept for display (see below).
   const filename = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}${ext}`
 
-  const blob = await put(`uploads/resumes/${filename}`, file, {
-    access: 'private',
-    contentType: file.type,
-  })
+  try {
+    const blob = await put(`uploads/resumes/${filename}`, file, {
+      access: 'private',
+      contentType: file.type,
+      token: process.env.BLOB_READ_WRITE_TOKEN_PRIVATE,
+    })
 
-  return NextResponse.json({ url: blob.url, name: file.name })
+    return NextResponse.json({ url: blob.url, name: file.name })
+  } catch (err) {
+    console.error('Resume upload error:', err)
+    return NextResponse.json({ error: err.message || 'Upload failed' }, { status: 500 })
+  }
 }

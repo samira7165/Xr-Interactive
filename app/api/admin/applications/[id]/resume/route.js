@@ -25,7 +25,10 @@ export async function GET(request, { params }) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
 
-  const result = await get(application.resumeUrl, { access: 'private' })
+  const result = await get(application.resumeUrl, {
+    access: 'private',
+    token: process.env.BLOB_READ_WRITE_TOKEN_PRIVATE,
+  })
   if (!result) {
     return NextResponse.json({ error: 'Not found' }, { status: 404 })
   }
