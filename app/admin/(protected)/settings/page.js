@@ -16,7 +16,7 @@ export default async function SettingsPage() {
       <h1 style={{ fontFamily: 'var(--font-display)', fontSize: '1.5rem', marginBottom: '1.5rem' }}>Settings</h1>
 
       <h2 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', marginBottom: '1rem' }}>My Profile</h2>
-      <div className="admin-card" style={{ maxWidth: '480px', marginBottom: '2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+      <div className="admin-card" style={{ maxWidth: '600px', margin: '0 auto 2rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
         {currentUser?.image ? (
           <img src={currentUser.image} alt="" style={{ width: '64px', height: '64px', borderRadius: '50%', objectFit: 'cover' }} />
         ) : (

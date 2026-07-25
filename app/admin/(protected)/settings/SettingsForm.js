@@ -8,7 +8,7 @@ export default function SettingsForm({ initialName, initialImage }) {
   const [state, formAction, pending] = useActionState(updateProfile, undefined)
 
   return (
-    <form action={formAction} className="admin-card" style={{ maxWidth: '480px' }}>
+    <form action={formAction} className="admin-card" style={{ maxWidth: '600px', margin: '0 auto' }}>
       <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', marginBottom: '1.25rem' }}>Edit Profile</h3>
 
       <ImageUploader name="image" defaultValue={initialImage} label="Profile Picture" />

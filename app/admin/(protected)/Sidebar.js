@@ -179,6 +179,7 @@ export default function Sidebar({ userLabel, userImage, role, badges = {} }) {
           .admin-sidebar-root:hover { width: 240px; }
           .admin-sidebar {
             width: 100%; height: 100vh; overflow: hidden;
+            position: sticky; top: 0;
           }
           .admin-sidebar-text {
             opacity: 0; max-width: 0; overflow: hidden;
