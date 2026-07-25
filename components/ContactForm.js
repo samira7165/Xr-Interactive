@@ -82,22 +82,22 @@ export default function ContactForm() {
       backdropFilter: 'blur(10px)',
     }}>
       <div className="form-group">
-        <label>Name</label>
-        <input type="text" name="name" placeholder="John Doe" />
+        <label htmlFor="contact-name">Name</label>
+        <input id="contact-name" type="text" name="name" placeholder="John Doe" />
         {errors.name && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.3rem' }}>{errors.name[0]}</p>}
       </div>
       <div className="form-group">
-        <label>Email</label>
-        <input type="email" name="email" placeholder="john@company.com" />
+        <label htmlFor="contact-email">Email</label>
+        <input id="contact-email" type="email" name="email" placeholder="john@company.com" />
         {errors.email && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.3rem' }}>{errors.email[0]}</p>}
       </div>
       <div className="form-group">
-        <label>Phone (optional)</label>
-        <input type="tel" name="phone" placeholder="+880 1XXX-XXXXXX" />
+        <label htmlFor="contact-phone">Phone (optional)</label>
+        <input id="contact-phone" type="tel" name="phone" placeholder="+880 1XXX-XXXXXX" />
       </div>
       <div className="form-group">
-        <label>Tell us about your project</label>
-        <textarea name="message" placeholder="Describe your project, goals, and timeline..." rows={5} />
+        <label htmlFor="contact-message">Tell us about your project</label>
+        <textarea id="contact-message" name="message" placeholder="Describe your project, goals, and timeline..." rows={5} />
         {errors.message && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.3rem' }}>{errors.message[0]}</p>}
       </div>
       {serverError && <p style={{ color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem' }}>{serverError}</p>}

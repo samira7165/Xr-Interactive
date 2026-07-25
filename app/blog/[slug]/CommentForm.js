@@ -9,11 +9,12 @@ export default function CommentForm({ slug }) {
 
   async function handleSubmit(e) {
     e.preventDefault()
+    const form = e.currentTarget
     setStatus('pending')
     setErrors({})
     setServerError('')
 
-    const formData = new FormData(e.currentTarget)
+    const formData = new FormData(form)
     const payload = {
       name: formData.get('name'),
       body: formData.get('body'),
@@ -46,7 +47,7 @@ export default function CommentForm({ slug }) {
         return
       }
 
-      e.currentTarget.reset()
+      form.reset()
       setStatus('success')
     } catch {
       setServerError('Something went wrong. Please try again.')
@@ -78,13 +79,13 @@ export default function CommentForm({ slug }) {
       border: '1px solid var(--border)',
     }}>
       <div className="form-group">
-        <label>Name</label>
-        <input type="text" name="name" placeholder="John Doe" maxLength={80} required />
+        <label htmlFor="comment-name">Name</label>
+        <input id="comment-name" type="text" name="name" placeholder="John Doe" maxLength={80} required />
         {errors.name && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.3rem' }}>{errors.name[0]}</p>}
       </div>
       <div className="form-group">
-        <label>Comment</label>
-        <textarea name="body" placeholder="Share your thoughts..." rows={4} maxLength={2000} required />
+        <label htmlFor="comment-body">Comment</label>
+        <textarea id="comment-body" name="body" placeholder="Share your thoughts..." rows={4} maxLength={2000} required />
         {errors.body && <p style={{ color: '#f87171', fontSize: '0.8rem', marginTop: '0.3rem' }}>{errors.body[0]}</p>}
       </div>
       {serverError && <p style={{ color: '#f87171', fontSize: '0.85rem', marginBottom: '1rem' }}>{serverError}</p>}

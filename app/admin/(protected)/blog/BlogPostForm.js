@@ -51,6 +51,11 @@ export default function BlogPostForm({ postId, initialData }) {
       <div className="admin-field">
         <label className="admin-label">Body (optional)</label>
         <textarea className="admin-textarea" name="body" rows={6} defaultValue={initialData?.body} />
+        <p style={{ color: 'var(--text-muted)', fontSize: '0.78rem', marginTop: '0.35rem' }}>
+          Start a line with <code>## </code> to begin a new section (e.g. <code>## Project Goal</code>) — this
+          also builds the &ldquo;In this Article&rdquo; table of contents on the post page. Leave a blank line
+          between paragraphs.
+        </p>
       </div>
       <div className="admin-field">
         <label className="admin-label">Category</label>

@@ -3,7 +3,8 @@ import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import { ScrollReveal } from '@/components/ScrollReveal'
-import ShareButtons from '../../careers/ShareButtons'
+import BlogShareButtons from './BlogShareButtons'
+import TableOfContents from './TableOfContents'
 import CommentForm from './CommentForm'
 
 export async function generateMetadata({ params }) {
@@ -24,6 +25,48 @@ export async function generateMetadata({ params }) {
   }
 }
 
+function slugifyHeading(text) {
+  return text
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+}
+
+// Body text is written as plain paragraphs, optionally broken into named
+// sections with a "## Heading" line (see BlogPostForm's body field hint).
+// Blocks before the first heading (or the whole body, if there are no
+// headings at all) get `heading: null` and just render as plain paragraphs
+// with no table-of-contents entry.
+function parseBody(text) {
+  const blocks = []
+  let current = { heading: null, id: null, paragraphs: [] }
+  let buffer = []
+
+  const flushParagraph = () => {
+    const paragraph = buffer.join(' ').trim()
+    if (paragraph) current.paragraphs.push(paragraph)
+    buffer = []
+  }
+
+  for (const rawLine of text.split('\n')) {
+    const line = rawLine.trim()
+    if (line.startsWith('## ')) {
+      flushParagraph()
+      if (current.heading || current.paragraphs.length) blocks.push(current)
+      const heading = line.slice(3).trim()
+      current = { heading, id: slugifyHeading(heading), paragraphs: [] }
+    } else if (line === '') {
+      flushParagraph()
+    } else {
+      buffer.push(line)
+    }
+  }
+  flushParagraph()
+  if (current.heading || current.paragraphs.length) blocks.push(current)
+
+  return blocks
+}
+
 export default async function BlogPostDetail({ params }) {
   const { slug } = await params
   const post = await prisma.post.findUnique({ where: { slug } })
@@ -35,75 +78,94 @@ export default async function BlogPostDetail({ params }) {
     orderBy: { createdAt: 'desc' },
   })
 
-  const paragraphs = (post.body || post.excerpt).split(/\n{2,}/).filter(Boolean)
+  const blocks = parseBody(post.body || post.excerpt)
+  const tocSections = blocks.filter(b => b.heading)
 
   return (
     <main>
-      <div className="page-header" style={{ paddingBottom: '1.5rem' }}>
+      <div className="page-header" style={{ textAlign: 'left', paddingBottom: '0' }}>
         <ScrollReveal direction="up">
           <div className="section-label">
             <Link href="/blog" style={{ color: 'inherit' }}>Blog</Link> / {post.category}
           </div>
-          <h1 style={{ marginBottom: '1rem' }}>{post.title}</h1>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', flexWrap: 'wrap', color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-            <span>{new Date(post.createdAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
-            <ShareButtons title={post.title} />
+          <div className="blog-detail-hero">
+            <div>
+              <h1 style={{ margin: 0 }}>{post.title}</h1>
+            </div>
+            {post.image && (
+              <div className="blog-detail-hero-image">
+                <Image
+                  src={post.image}
+                  alt={post.title}
+                  width={640}
+                  height={480}
+                  quality={80}
+                  priority
+                  sizes="(max-width: 1024px) 100vw, 480px"
+                />
+              </div>
+            )}
+          </div>
+
+          <div className="blog-detail-author">
+            <Image src="/logo.png" alt="" width={36} height={36} style={{ objectFit: 'contain' }} />
+            <span><strong style={{ color: 'var(--text-primary)' }}>XR Interactive</strong> {' '}
+              | Last updated on {new Date(post.updatedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}
+            </span>
           </div>
         </ScrollReveal>
       </div>
 
-      {post.image && (
-        <section className="section" style={{ paddingTop: 0, paddingBottom: '1rem' }}>
-          <div style={{ maxWidth: '900px', margin: '0 auto' }}>
-            <Image
-              src={post.image}
-              alt={post.title}
-              width={900}
-              height={400}
-              quality={80}
-              priority
-              sizes="(max-width: 900px) 100vw, 900px"
-              style={{ width: '100%', height: 'auto', borderRadius: '16px', objectFit: 'cover', maxHeight: '420px' }}
-            />
-          </div>
-        </section>
-      )}
-
-      <section className="section" style={{ paddingTop: '1rem' }}>
-        <div style={{ maxWidth: '760px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '2.5rem' }}>
-          <ScrollReveal direction="up">
-            <div style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '0.95rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-              {paragraphs.map((p, i) => <p key={i}>{p}</p>)}
-            </div>
+      <section className="section" style={{ paddingTop: '2.5rem' }}>
+        <div className="blog-detail-layout" style={{ maxWidth: '1100px', margin: '0 auto' }}>
+          <ScrollReveal direction="left">
+            <aside className="blog-detail-sidebar">
+              <div>
+                <div className="blog-toc-label">Share this Article</div>
+                <BlogShareButtons title={post.title} />
+              </div>
+              <TableOfContents sections={tocSections} />
+            </aside>
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={0.05}>
-            <h2 className="section-title" style={{ fontSize: '1.15rem', marginBottom: '1.25rem' }}>
-              {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
-            </h2>
+            <div className="blog-detail-content">
+              {blocks.map((block, i) => (
+                <div key={block.id || i}>
+                  {block.heading && <h2 id={block.id}>{block.heading}</h2>}
+                  {block.paragraphs.map((p, j) => <p key={j}>{p}</p>)}
+                </div>
+              ))}
 
-            {comments.length > 0 && (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
-                {comments.map(comment => (
-                  <div key={comment.id} style={{
-                    padding: '1.25rem', borderRadius: '12px',
-                    background: 'var(--bg-card)', border: '1px solid var(--border)',
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem' }}>
-                      <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{comment.name}</span>
-                      <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
-                        {new Date(comment.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                      </span>
-                    </div>
-                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{comment.body}</p>
+              <div style={{ marginTop: '3rem', paddingTop: '2.5rem', borderTop: '1px solid var(--border)' }}>
+                <h2 className="section-title" style={{ fontSize: '1.15rem', marginBottom: '1.25rem' }}>
+                  {comments.length} {comments.length === 1 ? 'Comment' : 'Comments'}
+                </h2>
+
+                {comments.length > 0 && (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginBottom: '1.5rem' }}>
+                    {comments.map(comment => (
+                      <div key={comment.id} style={{
+                        padding: '1.25rem', borderRadius: '12px',
+                        background: 'var(--bg-card)', border: '1px solid var(--border)',
+                      }}>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', marginBottom: '0.5rem' }}>
+                          <span style={{ fontWeight: 600, fontSize: '0.9rem' }}>{comment.name}</span>
+                          <span style={{ color: 'var(--text-muted)', fontSize: '0.78rem', whiteSpace: 'nowrap' }}>
+                            {new Date(comment.createdAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                          </span>
+                        </div>
+                        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', lineHeight: 1.6, whiteSpace: 'pre-wrap' }}>{comment.body}</p>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            )}
+                )}
 
-            <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Leave a Comment</h3>
-            <CommentForm slug={post.slug} />
+                <h3 style={{ fontFamily: 'var(--font-display)', fontSize: '1rem', fontWeight: 600, marginBottom: '1rem' }}>Leave a Comment</h3>
+                <CommentForm slug={post.slug} />
+              </div>
+            </div>
           </ScrollReveal>
         </div>
       </section>
